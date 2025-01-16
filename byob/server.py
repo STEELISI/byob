@@ -975,7 +975,7 @@ class C2():
                     session.info = info
                     self.sessions[int(session.id)] = session
 
-                    SOCKET_PATH = self.socket_path + string(int(session.id))
+                    SOCKET_PATH = self.socket_path + str(int(session.id))
 
                     # Create a unix socket for this connection
                     server_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
