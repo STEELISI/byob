@@ -1264,10 +1264,10 @@ class Session(threading.Thread):
                 print(f"final result task: {task}")
 
             # Exit the session properly
-            time.sleep(1)
-            globals()['c2'].session_remove(self.id)
-            self._active.clear()
-            globals()['c2']._return()
+            # time.sleep(1)
+            # globals()['c2'].session_remove(self.id)
+            # self._active.clear()
+            # globals()['c2']._return()
 
             return
 
