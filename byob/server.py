@@ -458,7 +458,7 @@ class C2():
     def _get_prompt(self, data):
         with self._lock:
             # iterate the unix sockets looking for a command
-            for num, socket in self.unix_sockets:
+            for num, socket in self.unix_sockets.items():
                 # Use select to wait for a connection with a timeout
                 readable, _, _ = select.select([server_socket], [], [], 0.5)  # 1-second timeout
                 if not readable:
