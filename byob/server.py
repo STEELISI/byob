@@ -1084,7 +1084,7 @@ class C2():
         else:
             task = globals()['c2'].database.handle_task({'task': command, 'session': index})
             ses.send_task(task)
-            task = self.recv_task()
+            task = ses.recv_task()
             print(f"final result task: {task}")
 
         conn.close()
