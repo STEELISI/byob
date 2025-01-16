@@ -1237,6 +1237,9 @@ class Session(threading.Thread):
 
         """
 
+        util.display(f'conn {conn}')
+        util.display(f'command {command}')
+
         # If the connection is not on the screen and of the form "shell 1 cmd arg arg"
         if conn is not None and command is not None and len(command):
             # Run the command
