@@ -1256,6 +1256,8 @@ class Session(threading.Thread):
             else:
                 task = globals()['c2'].database.handle_task({'task': command, 'session': self.info.get('uid')})
                 self.send_task(task)
+                task = self.recv_task()
+                print(task)
 
             # Exit the session properly
             time.sleep(1)
