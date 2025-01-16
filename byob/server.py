@@ -1054,6 +1054,7 @@ class C2():
         # Call the command on that connection??
 
         index = -1
+        print(command)
         for i, conn2 in self.unix_sockets.items():
             print(conn, conn2, conn == conn2)
             if conn == conn2:
