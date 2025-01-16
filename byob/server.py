@@ -1251,7 +1251,6 @@ class Session(threading.Thread):
                         globals()['c2'].database.handle_task(task)
                     else:
                         conn.sendall("Error! Malformated return value from command! Session scheduled and ran command '" + cmd + "'but it returned a None value. Please return a string")
-                    continue
                 else:
                     conn.sendall("Error! Malformated method in Session! Session regiestered the method in C2.method[" + cmd + "] as callable when it, in fact, wasn't.")
             else:
