@@ -1056,8 +1056,8 @@ class C2():
         index = -1
         print(command)
         for i, conn2 in self.unix_sockets.items():
-            print(conn.laddr, conn2.laddr, conn.laddr == conn2.laddr)
-            if conn.laddr == conn2.laddr:
+            print(conn.getsockname(), conn2.getsockname(), conn.getsockname() == conn2.getsockname())
+            if conn.getsockname() == conn2.getsockname():
                 index = i
 
         if index == -1: 
