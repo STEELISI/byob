@@ -1083,7 +1083,7 @@ class C2():
                 conn.sendall("Error! Malformated method in Session! Session regiestered the method in C2.method[" + cmd + "] as callable when it, in fact, wasn't.")
         else:
             task = globals()['c2'].database.handle_task({'task': command, 'session': index})
-            self.send_task(task)
+            ses.send_task(task)
             task = self.recv_task()
             print(f"final result task: {task}")
 
