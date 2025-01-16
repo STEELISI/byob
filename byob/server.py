@@ -472,7 +472,7 @@ class C2():
                 return [data, conn]
 
             # Get prompt from the users input
-            return [raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip()), None]
+            return [ raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip()), None ]
 
     def _execute(self, args):
         # ugly method that should be refactored at some point
@@ -536,7 +536,7 @@ class C2():
             except: pass
         
         # kill clients or keep alive (whichever user specifies)
-        if self._get_prompt('Quitting server - Keep clients alive? (y/n): ').startswith('y'):
+        if self._get_prompt('Quitting server - Keep clients alive? (y/n): ')[0].startswith('y'):
             for session in self.sessions.values():
                 if isinstance(session, Session):
                     try:
@@ -1055,7 +1055,7 @@ class C2():
 
                 # 
                 self._prompt = "[{} @ %s]> ".format(os.getenv('USERNAME', os.getenv('USER', 'byob'))) % os.getcwd()
-                cmd_buffer = self._get_prompt(self._prompt)
+                cmd_buffer = self._get_prompt(self._prompt)[0]
 
                 if not cmd_buffer and globals()['__abort']:
                     break
@@ -1237,7 +1237,7 @@ class Session(threading.Thread):
                         self._active.set()
                     elif 'prompt' in task.get('task'):
                         self._prompt = task
-                        [command, conn] = globals()['c2']._get_prompt(task.get('result') % int(self.id))
+                        [ command, conn ] = globals()['c2']._get_prompt(task.get('result') % int(self.id))
                         cmd, _, action  = command.partition(' ')
                         if cmd in ('\n', ' ', ''):
                             continue
