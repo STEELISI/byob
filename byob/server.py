@@ -1065,7 +1065,7 @@ class C2():
                 # 
                 self._prompt = "[{} @ %s]> ".format(os.getenv('USERNAME', os.getenv('USER', 'byob'))) % os.getcwd()
                 [ cmd_buffer, conn ] = self._get_prompt(self._prompt)
-                util.display(f"connection made in C2 loop: {cmd_buffer}")
+                util.display(f"connection made in C2 loop: {cmd_buffer}, {conn}")
 
                 if not cmd_buffer and globals()['__abort']:
                     break
