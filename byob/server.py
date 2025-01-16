@@ -184,6 +184,7 @@ class C2():
         self.sessions = {}
         self.socket = self._socket(port)
         self.banner = self._banner()
+        self.unix_sockets = {}
         self.commands = {
             'set' : {
                 'method': self.set,
@@ -972,6 +973,19 @@ class C2():
                     util.display(time.ctime(session._created), color='white', style='normal')
                     session.info = info
                     self.sessions[int(session.id)] = session
+
+                    # Create a unix socket for this connection
+                    server_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+
+                    # Bind the socket to the path
+                    server_socket.bind(SOCKET_PATH)
+
+                    # Listen for incoming connections
+                    server_socket.listen(1)
+                    print(f"Server listening on {SOCKET_PATH}")
+
+                    self.unix_sockets[int(session.id)] = server_socket
+
             else:
                 util.display("\n\n[-]", color='red', style='bright', end=' ')
                 util.display("Failed Connection:", color='white', style='bright', end=' ')
