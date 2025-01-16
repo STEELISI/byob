@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 'Command & Control (Build Your Own Botnet)'
 from __future__ import print_function
