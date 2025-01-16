@@ -280,7 +280,7 @@ COMMIT;
         """
         if isinstance(task, dict):
             if 'uid' not in task:
-                buid = str(task['session']) + str(task['task']) + str(datetime.datetime.now().ctime()).encode()
+                buid = (str(task['session']) + str(task['task']) + str(datetime.datetime.now().ctime())).encode()
                 task['uid'] = hashlib.md5(buid).hexdigest()
                 task['issued'] = datetime.datetime.now()
                 self.execute_query('insert into tbl_tasks (uid, session, task, issued) values (:uid, :session, :task, :issued)', params={"uid": task['uid'],  "session": task['session'], "task": task['task'], "issued": task['issued']}, returns=False)
