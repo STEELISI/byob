@@ -1231,7 +1231,7 @@ class Session(threading.Thread):
             # empty header; peer down, scan or recon. Drop.
             return 0
 
-    def run(self, conn = None, cmd = None):
+    def run(self, conn = None, command = None):
         """
         Handle the server-side of the session's reverse TCP shell
 
