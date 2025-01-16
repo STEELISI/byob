@@ -952,7 +952,7 @@ class C2():
             util.display("\n\nStarting Reverse TCP Shell w/ Session {}...\n".format(session), color='white', style='normal')
             self.current_session._active.set()
             conn = None
-            if int(session) in conn:
+            if int(session) in self.unix_sockets:
                 conn = self.unix_sockets[int(session)]
             return self.current_session.run(conn, cmd)
 
