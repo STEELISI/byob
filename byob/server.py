@@ -461,7 +461,7 @@ class C2():
             # iterate the unix sockets looking for a command
             for num, socket in self.unix_sockets.items():
                 # Use select to wait for a connection with a timeout
-                readable, _, _ = select.select([server_socket], [], [], 0.5)  # 1-second timeout
+                readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
                 if not readable:
                     continue
 
