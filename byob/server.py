@@ -1058,7 +1058,9 @@ class C2():
             if conn == conn2:
                 index = i
 
-        if index == -1: return 
+        if index == -1: 
+            util.display("connection not found. the unix socket died and wasnt properly removed")
+            return 
 
         ses = self.sessions[index]
 
@@ -1083,6 +1085,8 @@ class C2():
             task = self.recv_task()
             print(f"final result task: {task}")
 
+        conn.close()
+
 
 
     def run(self):
@@ -1103,7 +1107,6 @@ class C2():
                 # 
                 self._prompt = "[{} @ %s]> ".format(os.getenv('USERNAME', os.getenv('USER', 'byob'))) % os.getcwd()
                 [ cmd_buffer, conn ] = self._get_prompt(self._prompt)
-                util.display(f"connection made in C2 loop: {cmd_buffer}, {conn}")
 
                 if conn is not None:
                     self.process_unix(cmd_buffer, conn)                    
