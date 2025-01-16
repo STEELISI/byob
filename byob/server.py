@@ -469,10 +469,10 @@ class C2():
 
                 data = conn.recv(1024).decode("utf-8")
                 
-                return data, conn
+                return [data, conn]
 
             # Get prompt from the users input
-            return raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip()), None
+            return [raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip()), None]
 
     def _execute(self, args):
         # ugly method that should be refactored at some point
@@ -1237,7 +1237,7 @@ class Session(threading.Thread):
                         self._active.set()
                     elif 'prompt' in task.get('task'):
                         self._prompt = task
-                        command, conn = globals()['c2']._get_prompt(task.get('result') % int(self.id))
+                        [command, conn] = globals()['c2']._get_prompt(task.get('result') % int(self.id))
                         cmd, _, action  = command.partition(' ')
                         if cmd in ('\n', ' ', ''):
                             continue
