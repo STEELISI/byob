@@ -1123,8 +1123,6 @@ class C2():
                 task = ses.recv_task() # Second one is the result
             conn.sendall((f"{task['result']}\n").encode("utf-8"))
 
-        conn.close()
-
 
     @util.threaded
     def serve_unix_sockets(self):
@@ -1151,6 +1149,8 @@ class C2():
                 continue
 
             self.process_unix(data, conn)
+
+            conn.close()
 
 
     def run(self):
