@@ -1037,6 +1037,8 @@ class C2():
 
                     print(f'hostname: {hostname}')
 
+                    SOCKET_PATH = self.socket_path + str(hostname)
+
                     # Create a unix socket for this connection
                     server_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
