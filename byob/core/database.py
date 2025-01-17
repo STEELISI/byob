@@ -68,7 +68,7 @@ COMMIT;
 
         """
         print('here1')
-        super(Database, self).__init__(database, check_same_thread=False)
+        super(Database, self).__init__(database)# , check_same_thread=False)
         print('here2')
         self.row_factory = sqlite3.Row
         print('here3')
