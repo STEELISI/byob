@@ -1091,29 +1091,28 @@ class C2():
 
     @util.threaded
     def serve_unix_sockets(self):
-        with self._lock:
-            data = None
-            conn = None
+        data = None
+        conn = None
 
-            # iterate the unix sockets looking for a command
-            for num, socket in self.unix_sockets.items():
-                # Use select to wait for a connection with a timeout
-                readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
-                if not readable:
-                    continue
+        # iterate the unix sockets looking for a command
+        for num, socket in self.unix_sockets.items():
+            # Use select to wait for a connection with a timeout
+            readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
+            if not readable:
+                continue
 
-                conn, _ = socket.accept()
-                print(f"connected to unix client {num}")
+            conn, _ = socket.accept()
+            print(f"connected to unix client {num}")
 
-                data = conn.recv(1024).decode("utf-8")
+            data = conn.recv(1024).decode("utf-8")
 
-                if readable:
-                    break
-                
-            if data is None or conn is None:
-                time.sleep(1)
+            if readable:
+                break
+            
+        if data is None or conn is None:
+            time.sleep(1)
 
-            self.process_unix(data, conn)
+        self.process_unix(data, conn)
 
 
     def run(self):
