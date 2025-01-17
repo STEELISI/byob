@@ -990,6 +990,7 @@ class C2():
         print('at start of serve until stopped')
         util.display('at start of serve until stopped')
         self.database = database.Database(self._database)
+        print('after database call')
         for session_info in self.database.get_sessions(verbose=True):
             self.database.update_status(session_info.get('uid'), 0)
             session_info['online'] = False
