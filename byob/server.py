@@ -1200,47 +1200,46 @@ class C2():
             globals()['__threads']['c2'] = self.serve_until_stopped()
             globals()['__threads']['c2-unix'] = self.serve_unix_sockets()
         while True:
-            continue
-            # try:
-            #     # Wait for events to stop before continuing (ie current session)
-            #     self._active.wait()
+            try:
+                # Wait for events to stop before continuing (ie current session)
+                self._active.wait()
 
-            #     # 
-            #     self._prompt = "[{} @ %s]> ".format(os.getenv('USERNAME', os.getenv('USER', 'byob'))) % os.getcwd()
-            #     [ cmd_buffer, conn ] = self._get_prompt(self._prompt)
+                # 
+                self._prompt = "[{} @ %s]> ".format(os.getenv('USERNAME', os.getenv('USER', 'byob'))) % os.getcwd()
+                [ cmd_buffer, conn ] = self._get_prompt(self._prompt)
 
-            #     if not cmd_buffer and globals()['__abort']:
-            #         break
+                if not cmd_buffer and globals()['__abort']:
+                    break
 
-            #     output = ''
-            #     cmd, _, action = cmd_buffer.partition(' ')
-            #     if cmd in self.commands:
-            #         method = self.commands[cmd]['method']
-            #         if callable(method):
-            #             try:
-            #                 output = method(action) if len(action) else method()
-            #             except Exception as e1:
-            #                 output = str(e1)
-            #         else:
-            #             util.display("\n[-]", color='red', style='bright', end=' ')
-            #             util.display("Error:", color='white', style='bright', end=' ')
-            #             util.display(method + "\n", color='white', style='normal')
-            #     elif cmd == 'cd':
-            #         try:
-            #             os.chdir(action)
-            #         except: pass
-            #     else:
-            #         try:
-            #             output = str().join((subprocess.Popen(cmd_buffer, 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True).communicate()))
-            #         except: 
-            #             pass
+                output = ''
+                cmd, _, action = cmd_buffer.partition(' ')
+                if cmd in self.commands:
+                    method = self.commands[cmd]['method']
+                    if callable(method):
+                        try:
+                            output = method(action) if len(action) else method()
+                        except Exception as e1:
+                            output = str(e1)
+                    else:
+                        util.display("\n[-]", color='red', style='bright', end=' ')
+                        util.display("Error:", color='white', style='bright', end=' ')
+                        util.display(method + "\n", color='white', style='normal')
+                elif cmd == 'cd':
+                    try:
+                        os.chdir(action)
+                    except: pass
+                else:
+                    try:
+                        output = str().join((subprocess.Popen(cmd_buffer, 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True).communicate()))
+                    except: 
+                        pass
 
-            #     if output:
-            #         util.display(str(output))
+                if output:
+                    util.display(str(output))
 
-            # except KeyboardInterrupt:
-            #     self._active.clear()
-            #     break
+            except KeyboardInterrupt:
+                self._active.clear()
+                break
         self.quit()
 
 
