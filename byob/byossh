@@ -38,10 +38,11 @@ while [[ $# -gt 0 ]]; do
         *)
             if [ "$node" = "" ]; then
                 node="$1"
+                shift
             else 
                 command="$@"
+                shift "$#"
             fi
-            shift
             ;;
     esac
 done
@@ -54,7 +55,7 @@ if [ "$node" = "" ] || [ "$command" = "" ]; then
 fi
 
 
-if [ ! -f /tmp/byob-socket/$node ]; then
+if [ ! -S /tmp/byob-socket/$node ]; then
     echo "unix socket /tmp/byob-socket/$node doesn't exist"
     echo "cannot execute remote command"
     exit 1
