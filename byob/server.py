@@ -1095,7 +1095,7 @@ class C2():
         data = None
         conn = None
 
-        log("testing")
+        util.display("testing")
 
         # iterate the unix sockets looking for a command
         for num, socket in self.unix_sockets.items():
@@ -1105,7 +1105,7 @@ class C2():
                 continue
 
             conn, _ = socket.accept()
-            log(f"connected to unix client {num}")
+            util.display(f"connected to unix client {num}")
 
             data = conn.recv(1024).decode("utf-8")
 
