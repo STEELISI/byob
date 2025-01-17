@@ -6,6 +6,10 @@ node=""
 time="5"
 command=""
 
+if ! command -v socat &> /dev/null; then 
+    echo "this script depends on socat. please install"; 
+    exit 1
+fi
 
 show_help() {
     echo -e "Usage: ./byossh [flags] [node] [command]"
