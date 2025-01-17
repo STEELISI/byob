@@ -993,6 +993,7 @@ class C2():
         for session_info in self.database.get_sessions(verbose=True):
             self.database.update_status(session_info.get('uid'), 0)
             session_info['online'] = False
+        print('after for loop')
         while True:
             print('connecting')
             connection, address = self.socket.accept()
