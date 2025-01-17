@@ -1055,6 +1055,7 @@ class C2():
                     util.display(f"Unix server listening on {SOCKET_PATH}")
 
                     self.unix_sockets[hostname] = server_socket
+                    self.sessions[hostname] = session
  
             else:
                 util.display("\n\n[-]", color='red', style='bright', end=' ')
