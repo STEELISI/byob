@@ -1053,6 +1053,8 @@ class C2():
         # Find the correct connection from that socket
         # Call the command on that connection??
 
+        command = command.strip()
+
         index = -1
         for i, conn2 in self.unix_sockets.items():
             if conn.getsockname() == conn2.getsockname():
