@@ -192,6 +192,12 @@ class C2():
         except:
             pass
 
+        # Remove sockets from byob-socket in case of reboot
+        for filename in os.listdir(self.socket_path):
+            filepath = os.path.join(self.socket_path, filename)
+            if os.path.isfile(filepath):
+                os.remove(filepath)
+
         self.commands = {
             'set' : {
                 'method': self.set,
@@ -1019,7 +1025,6 @@ class C2():
 
                     # Listen for incoming connections
                     server_socket.listen(1)
-                    print(f"Unix server listening on {SOCKET_PATH}")
 
                     self.unix_sockets[int(session.id)] = server_socket
 
@@ -1031,14 +1036,13 @@ class C2():
                     if task['task'] == 'prompt': # First task is to display prompt to user
                         task = session.recv_task() # Second one is the result
 
-                    print(f'hostname task result: {task}')
-
                     hostname = task['result'].strip()
-
-                    print(f'hostname: {hostname}')
 
                     # Allow us to address the sockets by short hostnames for ease of use
                     SOCKET_PATH = self.socket_path + str(hostname.split(".")[0])
+
+                    if os.path.exists(SOCKET_PATH):
+                        os.remove(SOCKET_PATH)
 
                     # Create a unix socket for this connection
                     server_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -1048,7 +1052,7 @@ class C2():
 
                     # Listen for incoming connections
                     server_socket.listen(1)
-                    print(f"Unix server listening on {SOCKET_PATH}")
+                    util.display(f"Unix server listening on {SOCKET_PATH}")
 
                     self.unix_sockets[hostname] = server_socket
  
@@ -1092,13 +1096,11 @@ class C2():
                 index = i
 
         if index == -1: 
-            # util.display("connection not found. the unix socket died and wasnt properly removed")
             return 
 
         ses = self.sessions[index]
 
         # Run the command
-        # util.display(f'command: {command}')
         cmd, _, action  = command.partition(' ')
         if cmd in globals()['c2'].commands and callable(globals()['c2'].commands[cmd]['method']):
             method = globals()['c2'].commands[cmd]['method']
@@ -1137,7 +1139,6 @@ class C2():
                     continue
 
                 conn, _ = socket.accept()
-                # util.display(f"connected to unix client {num}")
 
                 data = conn.recv(1024).decode("utf-8")
 
@@ -1170,11 +1171,6 @@ class C2():
                 # 
                 self._prompt = "[{} @ %s]> ".format(os.getenv('USERNAME', os.getenv('USER', 'byob'))) % os.getcwd()
                 [ cmd_buffer, conn ] = self._get_prompt(self._prompt)
-
-                if conn is not None:
-                    self.process_unix(cmd_buffer, conn)                    
-                    continue
-
 
                 if not cmd_buffer and globals()['__abort']:
                     break
@@ -1351,7 +1347,6 @@ class Session(threading.Thread):
         # If the connection is not on the screen and of the form "shell 1 cmd arg arg"
         if conn is not None and command is not None and len(command):
             # Run the command
-            util.display(f'command: {command}')
             cmd, _, action  = command.partition(' ')
             if cmd in globals()['c2'].commands and callable(globals()['c2'].commands[cmd]['method']):
                 method = globals()['c2'].commands[cmd]['method']
