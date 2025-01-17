@@ -1025,7 +1025,7 @@ class C2():
 
                     # Listen for incoming connections
                     server_socket.listen(1)
-                    util.display(f"    Using socket: {SOCKET_PATH}", color='white', style='bright', end='\n')
+                    util.display(f"    Using socket: {SOCKET_PATH}\n", color='white', style='bright', end='')
                     self.unix_sockets[int(session.id)] = server_socket
 
                     # Create socket with the hostname
@@ -1052,7 +1052,7 @@ class C2():
 
                     # Listen for incoming connections
                     server_socket.listen(1)
-                    util.display(f"    Using socket: {SOCKET_PATH}", color='white', style='bright', end='\n')
+                    util.display(f"    Using socket: {SOCKET_PATH}\n", color='white', style='bright', end='')
 
                     self.unix_sockets[hostname] = server_socket
                     self.sessions[hostname] = session
