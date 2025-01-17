@@ -458,19 +458,19 @@ class C2():
 
     def _get_prompt(self, data):
         with self._lock:
-            # iterate the unix sockets looking for a command
-            for num, socket in self.unix_sockets.items():
-                # Use select to wait for a connection with a timeout
-                readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
-                if not readable:
-                    continue
+            # # iterate the unix sockets looking for a command
+            # for num, socket in self.unix_sockets.items():
+            #     # Use select to wait for a connection with a timeout
+            #     readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
+            #     if not readable:
+            #         continue
 
-                conn, _ = socket.accept()
-                print(f"connected to unix client {num}")
+            #     conn, _ = socket.accept()
+            #     print(f"connected to unix client {num}")
 
-                data = conn.recv(1024).decode("utf-8")
-                
-                return [ data, conn ]
+            #     data = conn.recv(1024).decode("utf-8")
+            #     
+            #     return [ data, conn ]
 
             # Get prompt from the users input
             return [ raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip()), None ]
@@ -1089,6 +1089,31 @@ class C2():
 
         conn.close()
 
+    @util.threaded
+    def serve_unix_sockets(self):
+        with self._lock:
+            data = None
+            conn = None
+
+            # iterate the unix sockets looking for a command
+            for num, socket in self.unix_sockets.items():
+                # Use select to wait for a connection with a timeout
+                readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
+                if not readable:
+                    continue
+
+                conn, _ = socket.accept()
+                print(f"connected to unix client {num}")
+
+                data = conn.recv(1024).decode("utf-8")
+
+                if readable:
+                    break
+                
+            if data is None or conn is None:
+                time.sleep(1)
+
+            process_unix(data, conn)
 
 
     def run(self):
@@ -1101,6 +1126,7 @@ class C2():
         self._active.set()
         if 'c2' not in globals()['__threads']:
             globals()['__threads']['c2'] = self.serve_until_stopped()
+            globals()['__threads']['c2-unix'] = self.serve_unix_sockets()
         while True:
             try:
                 # Wait for events to stop before continuing (ie current session)
