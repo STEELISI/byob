@@ -1095,6 +1095,8 @@ class C2():
         data = None
         conn = None
 
+        util.display("testing")
+
         # iterate the unix sockets looking for a command
         for num, socket in self.unix_sockets.items():
             # Use select to wait for a connection with a timeout
