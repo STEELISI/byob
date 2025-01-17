@@ -68,6 +68,7 @@ COMMIT;
 
         """
         print('here1')
+        print(f'database: {database}')
         try:
             super(Database, self).__init__(database)# , check_same_thread=False)
         except Exception as e:
