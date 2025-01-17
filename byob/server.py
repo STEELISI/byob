@@ -1109,19 +1109,35 @@ class C2():
                 result = method(action) if len(action) else method()
                 if result:
                     task = {'task': cmd, 'result': result, 'session': index}
-                    conn.sendall(result.encode())
+                    try:
+                        conn.sendall(result.encode())
+                    except:
+                        conn.close()
+                        pass
                     globals()['c2'].database.handle_task(task)
                 else:
-                    conn.sendall("Error! Malformated return value from command! Session scheduled and ran command '" + cmd + "'but it returned a None value. Please return a string")
+                    try:
+                        conn.sendall("Error! Malformated return value from command! Session scheduled and ran command '" + cmd + "'but it returned a None value. Please return a string")
+                    except:
+                        conn.close()
+                        pass
             else:
-                conn.sendall("Error! Malformated method in Session! Session regiestered the method in C2.method[" + cmd + "] as callable when it, in fact, wasn't.")
+                try:
+                    conn.sendall("Error! Malformated method in Session! Session regiestered the method in C2.method[" + cmd + "] as callable when it, in fact, wasn't.")
+                except:
+                    conn.close()
+                    pass
         else:
             task = globals()['c2'].database.handle_task({'task': command, 'session': index})
             ses.send_task(task)
             task = ses.recv_task()
             if task['task'] == 'prompt': # First task is to display prompt to user
                 task = ses.recv_task() # Second one is the result
-            conn.sendall((f"{task['result']}\n").encode("utf-8"))
+            try:
+                conn.sendall((f"{task['result']}\n").encode("utf-8"))
+            except:
+                conn.close()
+                pass
 
 
     @util.threaded
@@ -1150,7 +1166,10 @@ class C2():
 
             self.process_unix(data, conn)
 
-            conn.close()
+            try:
+                conn.close()
+            except:
+                pass
 
 
     def run(self):
