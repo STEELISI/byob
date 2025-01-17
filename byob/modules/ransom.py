@@ -478,3 +478,4 @@ def run(args=None):
         encrypted = True
         return encrypt_files(action)
     return usage
+

@@ -1142,6 +1142,7 @@ class C2():
 
     @util.threaded
     def serve_unix_sockets(self):
+        print("serving sockets")
         while True:
             data = None
             conn = None
