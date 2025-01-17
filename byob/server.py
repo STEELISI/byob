@@ -1113,7 +1113,7 @@ class C2():
             if data is None or conn is None:
                 time.sleep(1)
 
-            process_unix(data, conn)
+            self.process_unix(data, conn)
 
 
     def run(self):
