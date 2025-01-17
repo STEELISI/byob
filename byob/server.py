@@ -1024,7 +1024,7 @@ class C2():
                     self.unix_sockets[int(session.id)] = server_socket
 
                     # Create socket with the hostname
-                    hostname_task = globals()['c2'].database.handle_task({'command': 'cat /etc/hostname', 'session': int(session.id)})
+                    hostname_task = globals()['c2'].database.handle_task({'task': 'cat /etc/hostname', 'session': int(session.id)})
                     session.send_task(hostname_task)
 
                     task = session.recv_task()
