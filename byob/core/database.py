@@ -67,13 +67,21 @@ COMMIT;
         :param str database:    name of the persistent database file
 
         """
+        print('here1')
         super(Database, self).__init__(database, check_same_thread=False)
+        print('here2')
         self.row_factory = sqlite3.Row
+        print('here3')
         self.text_factory = str
+        print('here4')
         self._database = database
+        print('here5')
         self._tasks = ['escalate','keylogger','outlook','packetsniffer','persistence','phone','portscan','process','ransom','screenshot','webcam']
+        print('here6')
         self.execute_file(sql=self._tbl_sessions, returns=False, display=False)
+        print('here7')
         self.execute_file(sql=self._tbl_tasks, returns=False, display=False)
+        print('here8')
 
     def _display(self, data, indent=4):
         c = globals().get('_color')
