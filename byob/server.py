@@ -987,6 +987,8 @@ class C2():
 
     @util.threaded
     def serve_until_stopped(self):
+        print('at start of serve until stopped')
+        util.display('at start of serve until stopped')
         self.database = database.Database(self._database)
         for session_info in self.database.get_sessions(verbose=True):
             self.database.update_status(session_info.get('uid'), 0)
