@@ -1089,6 +1089,7 @@ class C2():
 
         conn.close()
 
+
     @util.threaded
     def serve_unix_sockets(self):
         data = None
@@ -1102,7 +1103,7 @@ class C2():
                 continue
 
             conn, _ = socket.accept()
-            print(f"connected to unix client {num}")
+            util.display(f"connected to unix client {num}")
 
             data = conn.recv(1024).decode("utf-8")
 
