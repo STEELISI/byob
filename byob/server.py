@@ -1037,6 +1037,7 @@ class C2():
 
                     print(f'hostname: {hostname}')
 
+                    # Allow us to address the sockets by short hostnames for ease of use
                     SOCKET_PATH = self.socket_path + str(hostname.split(".")[0])
 
                     # Create a unix socket for this connection
