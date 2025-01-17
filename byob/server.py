@@ -1096,6 +1096,7 @@ class C2():
         conn = None
 
         util.display("testing")
+        log("testing")
 
         # iterate the unix sockets looking for a command
         for num, socket in self.unix_sockets.items():
