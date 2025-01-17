@@ -1096,11 +1096,8 @@ class C2():
             data = None
             conn = None
 
-            util.display("testing")
-
             # iterate the unix sockets looking for a command
             for num, socket in self.unix_sockets.items():
-                util.display('searching')
                 # Use select to wait for a connection with a timeout
                 readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
                 if not readable:
