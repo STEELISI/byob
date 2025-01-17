@@ -1006,8 +1006,10 @@ class C2():
             print('connecting')
             connection, address = self.socket.accept()
             session = Session(connection=connection, id=self._count)
+            print('b4 if')
             if session.info != None:
                 info = self.database.handle_session(session.info)
+                print('after handle')
                 if isinstance(info, dict):
                     self._count += 1
                     if info.pop('new', False):
