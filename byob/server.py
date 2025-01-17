@@ -1181,6 +1181,7 @@ class C2():
         Run C2 server administration terminal
 
         """
+        print('triggering run')
         if globals()['debug']:
             util.display('parent={} , child={} , args={}'.format(inspect.stack()[1][3], inspect.stack()[0][3], locals()))
         self._active.set()
