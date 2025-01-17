@@ -29,6 +29,7 @@ When the control server first boots it does a number of one time operations:
 5) Creates a separate thread to listen on port for new connections, accept the connections, create an associated session object, and add these new connections to the list of sessions (C2.sessions)
 6) Executes the C2's run function, which contains the terminal and execution loop
 
+
 <br>
 
 ### C2's "run" Function (The Main Control Loop)
@@ -52,6 +53,24 @@ The following is contained inside a while True loop and executes as follows:
 
 
 **NOTE:** Connecting to a session is a command in C2's self.commands dictionary. When a new shell is created, the C2 loop runs a function which executes the run function of the session object associated with the connection. This causes the C2 loop to idle until the session exits, and then prints the results.
+
+
+<br>
+
+### C2's "serve_unix_sockets" Function (Scripted Bot Control Interface)
+
+serve_unix_sockets is run in a background thread and checks the unix sockets in /tmp/byob-socket
+for any incoming messages. The program then passes these messages directly to the session and 
+returns the output. 
+
+The architecture of this function is similar to the run loop, but since it doesn't have any props
+or looping to do, its greatly simplified in comparison.
+
+The function `process_unix` actually sends the message to the target machine, formats the 
+response, and sends it back to the unix socket.
+
+Whenever a target host connects to the C&C server, two sockets are created: one for the connection 
+identifier and the other for the hostname, which is retrieved from /etc/hostname.
 
 
 <br>

