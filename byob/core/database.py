@@ -68,7 +68,10 @@ COMMIT;
 
         """
         print('here1')
-        super(Database, self).__init__(database)# , check_same_thread=False)
+        try:
+            super(Database, self).__init__(database)# , check_same_thread=False)
+        except Exception as e:
+            print("exception: {e}")
         print('here2')
         self.row_factory = sqlite3.Row
         print('here3')
