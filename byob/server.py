@@ -992,6 +992,7 @@ class C2():
             self.database.update_status(session_info.get('uid'), 0)
             session_info['online'] = False
         while True:
+            print('connecting')
             connection, address = self.socket.accept()
             session = Session(connection=connection, id=self._count)
             if session.info != None:
@@ -1010,6 +1011,8 @@ class C2():
                     util.display("    Started:", color='white', style='bright', end=' ')
                     util.display(time.ctime(session._created), color='white', style='normal')
                     session.info = info
+
+                    print('creating sockets')
                     self.sessions[int(session.id)] = session
 
                     SOCKET_PATH = self.socket_path + str(int(session.id))
