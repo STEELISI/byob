@@ -354,14 +354,15 @@ class Payload():
         output = []
         if not os.path.isfile(path):
             return "Error: file not found"
-        for line in open(path, 'rb').read().splitlines():
-            if len(line) and not line.isspace():
-                if len('\n'.join(output + [line])) < 48000:
-                    output.append(line)
-                else:
-                    break
+        with open(path, 'rb') as file:
+            for line in file.read().splitlines():
+                if len(line) and not line.isspace():
+                    decoded_line = line.decode('utf-8')  # Decode bytes to string
+                    if len('\n'.join(output + [decoded_line])) < 48000:
+                        output.append(decoded_line)
+                    else:
+                        break
         return '\n'.join(output)
-
 
     @config(platforms=['win32','linux','linux2','darwin'], command=True, usage='pwd')
     def pwd(self, *args):

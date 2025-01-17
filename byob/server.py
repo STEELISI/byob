@@ -261,14 +261,14 @@ class C2():
                 'method': 'you must first connect to a session to use this command',
                 'description': 'abort execution and self-destruct',
                 'usage': 'abort'},
-            # 'cat': {
-            #     'method': 'you must first connect to a session to use this command',
-            #     'description': 'display file contents', 
-            #     'usage': 'cat <path>'},
-            # 'cd': {
-            #     'method': 'you must first connect to a session to use this command',
-            #     'description': 'change current working directory',
-            #     'usage': 'cd <path>'},
+            'cat': {
+                'method': 'you must first connect to a session to use this command',
+                'description': 'display file contents', 
+                'usage': 'cat <path>'},
+            'cd': {
+                'method': 'you must first connect to a session to use this command',
+                'description': 'change current working directory',
+                'usage': 'cd <path>'},
             'escalate': {
                 'method': 'you must first connect to a session to use this command',
                 'description': 'attempt uac bypass to escalate privileges',
