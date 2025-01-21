@@ -1428,7 +1428,7 @@ class Session(threading.Thread):
                         self._active.set()
                     elif 'prompt' in task.get('task'):
                         self._prompt = task
-                        [ command, conn ] = globals()['c2']._get_prompt(task.get('result') % int(self.id))
+                        [ command, isBackground ] = globals()['c2']._get_prompt(task.get('result') % int(self.id))
 
                         cmd, _, action  = command.partition(' ')
                         if cmd in ('\n', ' ', ''):
@@ -1439,55 +1439,32 @@ class Session(threading.Thread):
                                 result = method(action) if len(action) else method()
                                 if result:
                                     task = {'task': cmd, 'result': result, 'session': self.info.get('uid')}
-                                    if conn is None:
                                         globals()['c2'].display(result.encode())
-                                    else:
-                                        conn.sendall(result.encode())
                                     globals()['c2'].database.handle_task(task)
                                 else:
-                                    if conn is None:
                                         globals()['c2']._print("Error! Malformated return value from command! Session scheduled and ran command '" + cmd + "'but it returned a None value. Please return a string")
-                                    else:
-                                        conn.sendall("Error! Malformated return value from command! Session scheduled and ran command '" + cmd + "'but it returned a None value. Please return a string")
                                 continue
                             else:
-                                if conn is None:
                                     globals()['c2']._print("Error! Malformated method in Session! Session regiestered the method in C2.method[" + cmd + "] as callable when it, in fact, wasn't.")
-                                else:
-                                    conn.sendall("Error! Malformated method in Session! Session regiestered the method in C2.method[" + cmd + "] as callable when it, in fact, wasn't.")
                         else:
                             task = globals()['c2'].database.handle_task({'task': command, 'session': self.info.get('uid')})
                             self.send_task(task)
                     elif 'result' in task:
                         if task.get('result') and task.get('result') != 'None':
-                            if conn is None:
-                                globals()['c2'].display(task.get('result').encode())
-                            else:
-                                conn.sendall(task.get('result').encode())
+                            globals()['c2'].display(task.get('result').encode())
                             globals()['c2'].database.handle_task(task)
                         else:
-                            if conn is None:
-                                globals()['c2']._print("Error! Malformated task in Session! Tasks has a result field set to None. Verify bot communication code and return values from internal Session functions.")
-                            else:
-                                conn.sendall("Error! Malformated task in Session! Tasks has a result field set to None. Verify bot communication code and return values from internal Session functions.")
+                            globals()['c2']._print("Error! Malformated task in Session! Tasks has a result field set to None. Verify bot communication code and return values from internal Session functions.")
                     else:
-                        if conn is None:
-                            globals()['c2']._print("Error! Malformated task to Session! Tasks need to include one of the following keys: result, prompt, or help.\n")
-                        else:
-                            conn.sendall("Error! Malformated task to Session! Tasks need to include one of the following keys: result, prompt, or help.\n")
+                        globals()['c2']._print("Error! Malformated task to Session! Tasks need to include one of the following keys: result, prompt, or help.\n")
                 else:
                     if self._abort:
                         break
                     elif isinstance(task, int) and task == 0:
                         break
                     else:
-                        if conn is None:
-                            globals()['c2']._print("Error! Malformated task to Session! It should be an int or a dict.\n")
-                        else:
-                            conn.sendall("Error! Malformated task to Session! It should be an int or a dict.\n")
+                        globals()['c2']._print("Error! Malformated task to Session! It should be an int or a dict.\n")
                 self._prompt = None
-                if conn is not None:
-                    conn.close()
 
         time.sleep(1)
         globals()['c2'].session_remove(self.id)
