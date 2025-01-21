@@ -1439,7 +1439,7 @@ class Session(threading.Thread):
                                 result = method(action) if len(action) else method()
                                 if result:
                                     task = {'task': cmd, 'result': result, 'session': self.info.get('uid')}
-                                        globals()['c2'].display(result.encode())
+                                    globals()['c2'].display(result.encode())
                                     globals()['c2'].database.handle_task(task)
                                 else:
                                         globals()['c2']._print("Error! Malformated return value from command! Session scheduled and ran command '" + cmd + "'but it returned a None value. Please return a string")
