@@ -1211,7 +1211,8 @@ class C2():
                 [ cmd_buffer, inBackground ] = self._get_prompt(self._prompt)
 
                 if inBackground:
-                    continue
+                    while True: # loop here so prompt isn't constantly printing
+                        continue
 
                 if not cmd_buffer and globals()['__abort']:
                     break
