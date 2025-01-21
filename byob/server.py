@@ -21,6 +21,7 @@ import threading
 import subprocess
 import collections
 
+
 http_serv_mod = "SimpleHTTPServer"
 
 if sys.version_info[0] > 2:
@@ -68,6 +69,10 @@ __banner__ = """
 """
 
 # main
+
+
+_unix_mutex = threading.Lock()
+
 def main():
 
     parser = argparse.ArgumentParser(
@@ -169,7 +174,6 @@ class C2():
     _text_style = 'NORMAL'
     _prompt_color = 'WHITE'
     _prompt_style = 'BRIGHT'
-    _unix_mutex = threading.Lock()
 
     def __init__(self, host='0.0.0.0', port=1337, db=':memory:', silent=False):
         """
