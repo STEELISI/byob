@@ -1168,34 +1168,37 @@ class C2():
     @util.threaded
     def serve_unix_sockets(self):
         while True:
+            sockets = None
             with _unix_mutex:
-                data = None
-                conn = None
+                sockets = list(self.unix_sockets.items())
 
-                # iterate the unix sockets looking for a command
-                for num, socket in self.unix_sockets.items():
-                    # Use select to wait for a connection with a timeout
-                    readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
-                    if not readable:
-                        continue
+            data = None
+            conn = None
 
-                    conn, _ = socket.accept()
-
-                    data = conn.recv(1024).decode("utf-8")
-
-                    if readable:
-                        break
-                    
-                if data is None or conn is None:
-                    time.sleep(1)
+            # iterate the unix sockets looking for a command
+            for num, socket in self.unix_sockets.items():
+                # Use select to wait for a connection with a timeout
+                readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
+                if not readable:
                     continue
 
-                self.process_unix(data, conn)
+                conn, _ = socket.accept()
 
-                try:
-                    conn.close()
-                except:
-                    pass
+                data = conn.recv(1024).decode("utf-8")
+
+                if readable:
+                    break
+                
+            if data is None or conn is None:
+                time.sleep(1)
+                continue
+
+            self.process_unix(data, conn)
+
+            try:
+                conn.close()
+            except:
+                pass
 
 
     def run(self):
