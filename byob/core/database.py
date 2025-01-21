@@ -67,7 +67,6 @@ COMMIT;
         :param str database:    name of the persistent database file
 
         """
-        print(f'database: {database}')
         try:
             super(Database, self).__init__(database, check_same_thread=False)
         except Exception as e:

@@ -994,7 +994,6 @@ class C2():
 
     @util.threaded
     def serve_until_stopped(self):
-        util.display('at start of serve until stopped')
         self.database = database.Database(self._database)
         for session_info in self.database.get_sessions(verbose=True):
             self.database.update_status(session_info.get('uid'), 0)
@@ -1017,6 +1016,9 @@ class C2():
                     # util.display(str(session.id), color='white', style='normal')
                     # util.display("    Started:", color='white', style='bright', end=' ')
                     # util.display(time.ctime(session._created), color='white', style='normal')
+
+                    output = ""
+
                     session.info = info
 
                     self.sessions[int(session.id)] = session
@@ -1034,7 +1036,8 @@ class C2():
 
                     # Listen for incoming connections
                     server_socket.listen(1)
-                    util.display(f"    Using socket: {SOCKET_PATH}\n", color='white', style='bright', end='')
+                    output += f"    Using socket: {SOCKET_PATH}\n"
+                    # util.display(f"    Using socket: {SOCKET_PATH}\n", color='white', style='bright', end='')
                     self.unix_sockets[int(session.id)] = server_socket
 
                     # Create socket with the hostname
@@ -1061,11 +1064,16 @@ class C2():
 
                     # Listen for incoming connections
                     server_socket.listen(1)
-                    util.display(f"    Using socket: {SOCKET_PATH}\n", color='white', style='bright', end='')
+                    output += f"    Using socket: {SOCKET_PATH}\n"
+                    # util.display(f"    Using socket: {SOCKET_PATH}\n", color='white', style='bright', end='')
 
                     self.unix_sockets[hostname] = server_socket
                     self.sessions[hostname] = session
- 
+
+                    output = f"Connected to host ${str(hostname)}\n" + output
+
+                    util.display(output, color='white', style='bright', end='') 
+
             else:
                 util.display("\n\n[-]", color='red', style='bright', end=' ')
                 util.display("Failed Connection:", color='white', style='bright', end=' ')
@@ -1256,7 +1264,6 @@ class Session(threading.Thread):
         :param int id:      session ID
 
         """
-        print('session var init')
         super(Session, self).__init__()
         self._prompt = None
         self._abort = False
