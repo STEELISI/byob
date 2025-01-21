@@ -1070,7 +1070,7 @@ class C2():
                     self.unix_sockets[hostname] = server_socket
                     self.sessions[hostname] = session
 
-                    output = f"Connected to host ${str(hostname)}\n" + output
+                    output = f"Connected to host {str(hostname)}\n" + output
 
                     util.display(output, color='white', style='bright', end='') 
 
