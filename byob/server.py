@@ -476,22 +476,11 @@ class C2():
 
     def _get_prompt(self, data):
         with self._lock:
-            # # iterate the unix sockets looking for a command
-            # for num, socket in self.unix_sockets.items():
-            #     # Use select to wait for a connection with a timeout
-            #     readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
-            #     if not readable:
-            #         continue
-
-            #     conn, _ = socket.accept()
-            #     print(f"connected to unix client {num}")
-
-            #     data = conn.recv(1024).decode("utf-8")
-            #     
-            #     return [ data, conn ]
-
             # Get prompt from the users input
-            return [ raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip()), None ]
+            try: 
+                return [ raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip()), False ]
+            except EOFError:
+                return [ None, True ]
 
     def _execute(self, args):
         # ugly method that should be refactored at some point
@@ -1219,7 +1208,10 @@ class C2():
 
                 # 
                 self._prompt = "[{} @ %s]> ".format(os.getenv('USERNAME', os.getenv('USER', 'byob'))) % os.getcwd()
-                [ cmd_buffer, conn ] = self._get_prompt(self._prompt)
+                [ cmd_buffer, inBackground ] = self._get_prompt(self._prompt)
+
+                if inBackground:
+                    continue
 
                 if not cmd_buffer and globals()['__abort']:
                     break
