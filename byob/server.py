@@ -85,7 +85,8 @@ def main():
         action='store',
         type=str,
         default='0.0.0.0',
-        help='server hostname or IP address')
+        help='server hostname or IP address'
+    )
 
     parser.add_argument(
         '--silent',
@@ -98,19 +99,27 @@ def main():
         action='store',
         type=int,
         default=1337,
-        help='server port number')
+        help='server port number'
+    )
 
     parser.add_argument(
         '--database',
         action='store',
         type=str,
         default='database.db',
-        help='SQLite database')
+        help='SQLite database'
+    )
 
     parser.add_argument(
         '--debug',
         action='store_true',
         help='Additional logging'
+    )
+
+    parser.add_argument(
+        '--background',
+        action='store_true',
+        help='Run byob in the background without a cli interface'
     )
 
     parser.add_argument(
@@ -154,7 +163,7 @@ def main():
     globals()['post_handler'] = subprocess.Popen('{} core/handler.py {}'.format(sys.executable, int(options.port + 3)), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, shell=True)
 
     # run C2
-    globals()['c2'] = C2(host=options.host, port=options.port, db=options.database, silent=options.silent)
+    globals()['c2'] = C2(host=options.host, port=options.port, db=options.database, silent=options.silent, background=options.background)
     globals()['c2'].run()
 
 
@@ -175,7 +184,7 @@ class C2():
     _prompt_color = 'WHITE'
     _prompt_style = 'BRIGHT'
 
-    def __init__(self, host='0.0.0.0', port=1337, db=':memory:', silent=False):
+    def __init__(self, host='0.0.0.0', port=1337, db=':memory:', silent=False, background=False):
         """
         Create a new Command & Control server
 
@@ -199,6 +208,7 @@ class C2():
         self.silent = silent
         self.unix_sockets = {}
         self.socket_path = "/tmp/byob-socket/"
+        self.background = background
         try:
             os.mkdir(self.socket_path)
         except:
@@ -474,22 +484,9 @@ class C2():
             return options[state]
         return None
 
-    def is_running_in_background(self):
-        try:
-            # Check if stdin can be read without blocking
-            fd = sys.stdin.fileno()
-            return os.tcgetpgrp(fd) != os.getpgrp()
-        except OSError:
-            # If stdin is not connected to a terminal, assume background
-            return True
-
 
     def _get_prompt(self, data):
-        if self.is_running_in_background: # run in background
-            return [ None, True ]
-
         with self._lock:
-            # Get prompt from the users input
             try: 
                 return [ raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip()), False ]
             except EOFError: # can be result of not having stdin attached correctly (ie in background)
@@ -1217,6 +1214,8 @@ class C2():
             globals()['__threads']['c2'] = self.serve_until_stopped()
             globals()['__threads']['c2-unix'] = self.serve_unix_sockets()
         while True:
+            if self.background:
+                continue
             try:
                 # Wait for events to stop before continuing (ie current session)
                 self._active.wait()
@@ -1224,10 +1223,6 @@ class C2():
                 # 
                 self._prompt = "[{} @ %s]> ".format(os.getenv('USERNAME', os.getenv('USER', 'byob'))) % os.getcwd()
                 [ cmd_buffer, inBackground ] = self._get_prompt(self._prompt)
-
-                if inBackground:
-                    while True: # loop here so prompt isn't constantly printing
-                        continue
 
                 if not cmd_buffer and globals()['__abort']:
                     break
