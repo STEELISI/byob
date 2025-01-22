@@ -1207,6 +1207,7 @@ class C2():
             globals()['__threads']['c2-unix'] = self.serve_unix_sockets()
         while True:
             try:
+                continue
                 # Wait for events to stop before continuing (ie current session)
                 self._active.wait()
 
