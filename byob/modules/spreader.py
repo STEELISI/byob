@@ -8,6 +8,7 @@ import re
 import time
 import email
 from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
 import logging
 import smtplib
 import mimetypes
@@ -300,7 +301,7 @@ def get_mime_object(content_string, encoding):
             content_object["main_type"] = "application"
             content_object["sub_type"] = "octet-stream"
 
-    mime_object = email.MIMEBase.MIMEBase(
+    mime_object = MIMEBase(
         content_object["main_type"], content_object["sub_type"], name=content_name
     )
     mime_object.set_payload(content)
