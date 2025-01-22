@@ -1170,12 +1170,10 @@ class C2():
     @util.threaded
     def serve_unix_sockets(self):
         while True:
-            util.display("\n[-] Waiting on connections\n", color='red', style='bright', end=' ')
             sockets = None
-            util.display("\n[-] Waiting on mutex\n", color='red', style='bright', end=' ')
+
             with _unix_mutex:
                 sockets = list(self.unix_sockets.items())
-            util.display("\n[-] After mutex\n", color='red', style='bright', end=' ')
 
             data = None
             conn = None
