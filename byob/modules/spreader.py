@@ -9,6 +9,7 @@ import time
 import email
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
 import logging
 import smtplib
 import mimetypes
@@ -190,15 +191,15 @@ def prepare_message(user, useralias, addresses, subject, contents, attachments, 
         contents = attachments if contents is None else contents + attachments
 
     has_included_images, content_objects = prepare_contents(contents, encoding)
-    msg = email.MIMEMultipart.MIMEMultipart()
+    msg = MIMEMultipart()
     if headers is not None:
         for k, v in headers.items():
             msg[k] = v
     if headers is None or "Date" not in headers:
         msg["Date"] = email.utils.formatdate()
 
-    msg_alternative = email.MIMEMultipart.MIMEMultipart("alternative")
-    msg_related = email.MIMEMultipart.MIMEMultipart("related")
+    msg_alternative = MIMEMultipart("alternative")
+    msg_related = MIMEMultipart("related")
     msg_related.attach("-- HTML goes here --")
     msg.attach(msg_alternative)
     add_subject(msg, subject)
