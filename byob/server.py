@@ -1166,19 +1166,20 @@ class C2():
             conn = None
 
             # iterate the unix sockets looking for a command
-            for num, socket in self.unix_sockets.items():
-                # Use select to wait for a connection with a timeout
-                readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
-                if not readable:
-                    continue
+            if sockets is not None:
+                for num, socket in sockets:
+                    # Use select to wait for a connection with a timeout
+                    readable, _, _ = select.select([socket], [], [], 0.5)  # 1-second timeout
+                    if not readable:
+                        continue
 
-                conn, _ = socket.accept()
+                    conn, _ = socket.accept()
 
-                data = conn.recv(1024).decode("utf-8")
+                    data = conn.recv(1024).decode("utf-8")
 
-                if readable:
-                    break
-                
+                    if readable:
+                        break
+                    
             if data is None or conn is None:
                 time.sleep(1)
                 continue
