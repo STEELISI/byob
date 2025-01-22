@@ -474,12 +474,25 @@ class C2():
             return options[state]
         return None
 
+    def is_running_in_background(self):
+        try:
+            # Check if stdin can be read without blocking
+            fd = sys.stdin.fileno()
+            return os.tcgetpgrp(fd) != os.getpgrp()
+        except OSError:
+            # If stdin is not connected to a terminal, assume background
+            return True
+
+
     def _get_prompt(self, data):
+        if self.is_running_in_background: # run in background
+            return [ None, True ]
+
         with self._lock:
             # Get prompt from the users input
             try: 
                 return [ raw_input(getattr(colorama.Fore, self._prompt_color) + getattr(colorama.Style, self._prompt_style) + data.rstrip()), False ]
-            except EOFError:
+            except EOFError: # can be result of not having stdin attached correctly (ie in background)
                 return [ None, True ]
 
     def _execute(self, args):
@@ -1207,7 +1220,6 @@ class C2():
             globals()['__threads']['c2-unix'] = self.serve_unix_sockets()
         while True:
             try:
-                continue
                 # Wait for events to stop before continuing (ie current session)
                 self._active.wait()
 
