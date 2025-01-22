@@ -7,9 +7,11 @@ import os
 import re
 import time
 import email
+from email.mime.text import MIMEText
 import logging
 import smtplib
 import mimetypes
+
 
 try:
     string_types = (str, unicode)
@@ -242,8 +244,8 @@ def prepare_message(user, useralias, addresses, subject, contents, attachments, 
                         htmlstr += u"<div>{0}</div>".format(content_string)
                     altstr.append(content_string)
 
-    msg_related.get_payload()[0] = email.MIMEText.MIMEText(htmlstr, "html", _charset=encoding)
-    msg_alternative.attach(email.MIMEText.MIMEText("\n".join(altstr), _charset=encoding))
+    msg_related.get_payload()[0] = MIMEText(htmlstr, "html", _charset=encoding)
+    msg_alternative.attach(MIMEText("\n".join(altstr), _charset=encoding))
     msg_alternative.attach(msg_related)
     return msg
 
@@ -278,9 +280,9 @@ def get_mime_object(content_string, encoding):
         content_object["main_type"] = "text"
 
         if is_raw:
-            content_object["mime_object"] = email.MIMEText.MIMEText(content_string, _charset=encoding)
+            content_object["mime_object"] = MIMEText(content_string, _charset=encoding)
         else:
-            content_object["mime_object"] = email.MIMEText.MIMEText(content_string, "html", _charset=encoding)
+            content_object["mime_object"] = MIMEText(content_string, "html", _charset=encoding)
             content_object["sub_type"] = "html"
 
         if content_object["sub_type"] is None:
