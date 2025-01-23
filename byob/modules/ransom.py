@@ -170,6 +170,8 @@ def format_rsa(rsa_key, public = True):
     else:
         rsa_key = f"{rsa_key}\n{pem_footer}"
 
+    print(f"rsa key:\n\n{rsa_key}\n\n")
+
     # Return the formatted RSA key
     return Crypto.PublicKey.RSA.importKey(rsa_key)
 
