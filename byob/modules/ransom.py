@@ -73,7 +73,6 @@ encryption_dictionary = {}
 encrypted = False # Used to verify if encrypted. If true, save after threader
 
 
-# main
 def _threader(rsa_key):
     global tasks
     try:

