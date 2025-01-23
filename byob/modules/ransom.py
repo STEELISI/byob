@@ -327,6 +327,10 @@ def encrypt_files(args):
 
     """
 
+    print('args in:')
+    for arg in args.split(' '):
+        print(arg)
+
     [ target, rsa_key, priv_key ] = args.split(' ')
     if not os.path.exists(target):
         return "File '{}' does not exist".format(target)
