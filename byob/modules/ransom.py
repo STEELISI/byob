@@ -170,8 +170,6 @@ def format_rsa(rsa_key, public = True):
     else:
         rsa_key = f"{rsa_key}\n{pem_footer}"
 
-    print(f"rsa key:\n\n{rsa_key}\n\n")
-
     # Return the formatted RSA key
     return Crypto.PublicKey.RSA.importKey(rsa_key)
 
@@ -260,11 +258,12 @@ def encrypt_file(filename, rsa_key):
     try:
         if not os.path.isfile(filename):
             log("File '{}' not found".format(filename))
-        if not os.path.splitext(filename)[1] in globals()['filetypes']:
-            return "Error! Attempting the encrypt unsupported filetype"
+            return f"file {filename} not found"
+        # if not os.path.splitext(filename)[1] in globals()['filetypes']:
+        #     return "Error! Attempting the encrypt unsupported filetype"
 
-        if not isinstance(rsa_key, Crypto.PublicKey.RSA.RsaKey):
-            return "Error! rsa_key passed into encrypt_file is not valid."
+        # if not isinstance(rsa_key, Crypto.PublicKey.RSA.RsaKey):
+        #     return "Error! rsa_key passed into encrypt_file is not valid."
 
         cipher = Crypto.Cipher.PKCS1_OAEP.new(rsa_key)
         aes_key = os.urandom(32)
@@ -326,10 +325,6 @@ def encrypt_files(args):
     :param str args:    filename and RSA key separated by a space
 
     """
-
-    print('args in:')
-    for arg in args.split(' '):
-        print(arg)
 
     [ target, rsa_key, priv_key ] = args.split(' ')
     if not os.path.exists(target):
