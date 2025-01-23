@@ -7,13 +7,10 @@ import os
 import sys
 import time
 import threading
-
 try:
     from StringIO import StringIO  # Python 2
 except ImportError:
     from io import StringIO        # Python 3
-
-# packages
 if sys.platform == 'win32':
     import pyHook as hook_manager
     import pythoncom
@@ -22,6 +19,7 @@ else:
 
 # utilities
 import util
+
 
 # globals
 abort = False
