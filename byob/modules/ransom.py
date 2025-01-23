@@ -442,7 +442,7 @@ def setup(action):
     # Verify loc, pub, and priv key are include in en/de-crypt funcs
     params = action.split(' ')
     if len(params) != 4:
-        log("Can't unpack arguments. No private key given")
+        log("Can't unpack arguments. No public / private key given")
         return "Can't unpack arguments. No private key given"
 
     decrypt_encryption_dictionary('./enc.rsa', params[3])
@@ -464,9 +464,9 @@ def run(args=None):
         return usage
 
     # Load the previous dictionary or set up a windows key
-    setup_res = setup(args)
-    if 'Success' not in setup_res:
-        return setup_res
+    # setup_res = setup(args)
+    # if 'Success' not in setup_res:
+    #     return setup_res
 
     cmd, _, action = args.partition(' ')
 
