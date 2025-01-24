@@ -255,6 +255,7 @@ def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
 
     except Exception as e:
         log("{} error: {}".format(decrypt_ransom_aes.__name__, str(e)))
+        print(traceback.format_exc())
         raise
 
 
