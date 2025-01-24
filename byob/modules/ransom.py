@@ -370,7 +370,7 @@ def decrypt_files(action):
     """
 
 
-    output = shlex.split(' ')
+    output = shlex.split(action)
     print(f'\noutput into decrypt:\n{output}\n')
     rsa_key = output[1]
     # location, pub, priv
