@@ -7,6 +7,7 @@ import os
 import sys
 import time
 import base64
+import shlex
 import hashlib
 import queue
 import traceback
@@ -367,7 +368,10 @@ def decrypt_files(action):
     :param str rsa_key:     RSA private key in PEM format
 
     """
-    rsa_key = action.split(' ')[2]
+
+
+    output = shlex.split(' ')
+    rsa_key = output[1]
     # location, pub, priv
 
     try:
