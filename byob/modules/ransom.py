@@ -232,6 +232,9 @@ def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
 
     """
     try:
+        if isinstance(key, str):
+            key = key.encode("utf-8")
+
         # Decode the Base64-encoded ciphertext
         ciphertext = base64.b64decode(ciphertext_b64)
         
