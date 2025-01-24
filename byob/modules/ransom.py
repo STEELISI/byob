@@ -217,7 +217,7 @@ def encrypt_ransom_aes(plaintext, key, padding=chr(0)):
         return traceback.format_exc()
     return base64.b64encode(output)
 
-def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
+def decrypt_ransom_aes(encrypted, key, padding=chr(0)):
     """
     AES-256-OCB decryption
 
