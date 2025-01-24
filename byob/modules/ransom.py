@@ -372,11 +372,11 @@ def decrypt_files(action):
 
     output = shlex.split(action)
     print(f'\noutput into decrypt:\n{output}\n')
-    rsa_key = output[1]
+    rsa_key = output[2]
     # location, pub, priv
 
     try:
-        rsa_key = format_rsa(rsa_key)
+        rsa_key = format_rsa(rsa_key, public = False)
 
         if not rsa_key.has_private():
             return "Error: RSA key cannot decrypt"
