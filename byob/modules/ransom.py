@@ -35,6 +35,7 @@ else:
 import Crypto.Cipher.AES
 import Crypto.PublicKey.RSA
 import Crypto.Cipher.PKCS1_OAEP
+import Crypto.Random
 # from tkinter import Tk
 # from tkinter import messagebox
 
@@ -270,35 +271,58 @@ def encrypt_file(filename, rsa_key):
     Returns True if succesful, otherwise False
 
     """
-    try:
-        if not os.path.isfile(filename):
-            log("File '{}' not found".format(filename))
-            return f"file {filename} not found"
 
-        log(f"attempting to encypt: {filename}")
-        print(f"attempting to encypt: {filename}")
-        # if not os.path.splitext(filename)[1] in globals()['filetypes']:
-        #     return "Error! Attempting the encrypt unsupported filetype"
+    public_key = rsa_key.publickey()
 
-        # if not isinstance(rsa_key, Crypto.PublicKey.RSA.RsaKey):
-        #     return "Error! rsa_key passed into encrypt_file is not valid."
+    # Generate AES key
+    aes_key = Crypto.Random.get_random_bytes(32)
 
-        cipher = Crypto.Cipher.PKCS1_OAEP.new(rsa_key.publickey())
+    # Encrypt AES key with RSA
+    cipher_rsa = Crypto.CipherPKCS1_OAEP.new(public_key)
+    encrypted_key = cipher_rsa.encrypt(aes_key)
 
-        with open(filename, 'rb') as fp:
-            data = fp.read()
+    # Encrypt file content with AES
+    cipher_aes = Crypto.CipherAES.new(aes_key, Crypto.CipherAES.MODE_EAX)
+    with open(filename, 'rb') as f:
+        plaintext = f.read()
+    ciphertext, tag = cipher_aes.encrypt_and_digest(plaintext)
 
-        ciphertext = cipher.encrypt(data)
+    # Write encrypted data to output
+    with open(filename, 'wb') as f:
+        f.write(encrypted_key)  # Write encrypted AES key
+        f.write(cipher_aes.nonce)  # Write AES nonce
+        f.write(tag)  # Write AES tag
+        f.write(ciphertext)  # Write ciphertext
 
-        with open(filename, 'wb') as fd:
-            fd.write(ciphertext)
+    # try:
+    #     if not os.path.isfile(filename):
+    #         log("File '{}' not found".format(filename))
+    #         return f"file {filename} not found"
 
-        log('{} encrypted'.format(filename))
-        return '{} encrypted'.format(filename)
+    #     log(f"attempting to encypt: {filename}")
+    #     print(f"attempting to encypt: {filename}")
+    #     # if not os.path.splitext(filename)[1] in globals()['filetypes']:
+    #     #     return "Error! Attempting the encrypt unsupported filetype"
 
-    except Exception as e:
-        log("{} error: {}".format(encrypt_file.__name__, str(e)))
-        return "{} error: {}".format(encrypt_file.__name__, str(e))
+    #     # if not isinstance(rsa_key, Crypto.PublicKey.RSA.RsaKey):
+    #     #     return "Error! rsa_key passed into encrypt_file is not valid."
+
+    #     cipher = Crypto.Cipher.PKCS1_OAEP.new(rsa_key.publickey())
+
+    #     with open(filename, 'rb') as fp:
+    #         data = fp.read()
+
+    #     ciphertext = cipher.encrypt(data)
+
+    #     with open(filename, 'wb') as fd:
+    #         fd.write(ciphertext)
+
+    #     log('{} encrypted'.format(filename))
+    #     return '{} encrypted'.format(filename)
+
+    # except Exception as e:
+    #     log("{} error: {}".format(encrypt_file.__name__, str(e)))
+    #     return "{} error: {}".format(encrypt_file.__name__, str(e))
 
 
 def decrypt_file(filename, rsa_key):
@@ -312,29 +336,54 @@ def decrypt_file(filename, rsa_key):
     Returns True if succesful, otherwise False
 
     """
-    if not os.path.isfile(filename):
-        log("File '{}' not found".format(filename))
-        return f"file {filename} not found"
-
-    try:
-        with open(filename, 'rb') as fp:
-            ciphertext = fp.read()
 
 
-        cipher = Crypto.Cipher.PKCS1_OAEP.new(rsa_key)
+    # Load RSA private key
+    private_key = rsa_key
+
+    # Read encrypted file content
+    with open(filename, 'rb') as f:
+        encrypted_key = f.read(private_key.size_in_bytes())  # Read the encrypted AES key
+        nonce = f.read(16)  # Read the AES nonce (16 bytes for AES)
+        tag = f.read(16)  # Read the AES tag (16 bytes for AES)
+        ciphertext = f.read()  # Read the remaining ciphertext
+
+    # Decrypt AES key with RSA
+    cipher_rsa = Crypto.CipherPKCS1_OAEP.PKCS1_OAEP.new(private_key)
+    aes_key = cipher_rsa.decrypt(encrypted_key)
+
+    # Decrypt ciphertext with AES
+    cipher_aes = Crypto.CipherPKCS1_OAEP.AES.new(aes_key, Crypto.CipherPKCS1_OAEP.AES.MODE_EAX, nonce=nonce)
+    plaintext = cipher_aes.decrypt_and_verify(ciphertext, tag)
+
+    # Write the decrypted content to the output file
+    with open(filename, 'wb') as f:
+        f.write(plaintext)
+
+
+    # if not os.path.isfile(filename):
+    #     log("File '{}' not found".format(filename))
+    #     return f"file {filename} not found"
+
+    # try:
+    #     with open(filename, 'rb') as fp:
+    #         ciphertext = fp.read()
+
+
+    #     cipher = Crypto.Cipher.PKCS1_OAEP.new(rsa_key)
  
 
-        plaintext = cipher.decrypt(ciphertext)
+    #     plaintext = cipher.decrypt(ciphertext)
 
-        with open(filename, 'wb') as fd:
-            fd.write(plaintext)
+    #     with open(filename, 'wb') as fd:
+    #         fd.write(plaintext)
 
-        log('{} decrypted'.format(filename))
-        return '{} decrypted'.format(filename)
+    #     log('{} decrypted'.format(filename))
+    #     return '{} decrypted'.format(filename)
 
-    except Exception as e:
-        log("{} error: {}".format(decrypt_file.__name__, str(e)))
-        return "{} error: {}".format(decrypt_file.__name__, str(e))
+    # except Exception as e:
+    #     log("{} error: {}".format(decrypt_file.__name__, str(e)))
+    #     return "{} error: {}".format(decrypt_file.__name__, str(e))
 
 
 def encrypt_files(args):
