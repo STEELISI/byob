@@ -244,9 +244,7 @@ def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
 
         
         # Extract nonce, tag, and ciphertext from the combined output
-        nonce = ciphertext[:15]  # OCB mode nonce size
-        tag = ciphertext[15:31] # 16-byte authentication tag
-        encrypted_data = ciphertext[31:]
+        nonce, tag, ciphertext = [ data.read(x) for x in (Crypto.Cipher.AES.block_size - 1, Crypto.Cipher.AES.block_size, -1) ]
 
         # Initialize the cipher with the nonce
         cipher = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_OCB, nonce=nonce)
