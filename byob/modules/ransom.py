@@ -278,11 +278,11 @@ def encrypt_file(filename, rsa_key):
     aes_key = Crypto.Random.get_random_bytes(32)
 
     # Encrypt AES key with RSA
-    cipher_rsa = Crypto.CipherPKCS1_OAEP.new(public_key)
+    cipher_rsa = Crypto.Cipher.PKCS1_OAEP.new(public_key)
     encrypted_key = cipher_rsa.encrypt(aes_key)
 
     # Encrypt file content with AES
-    cipher_aes = Crypto.CipherAES.new(aes_key, Crypto.CipherAES.MODE_EAX)
+    cipher_aes = Crypto.Cipher.AES.new(aes_key, Crypto.Cipher.AES.MODE_EAX)
     with open(filename, 'rb') as f:
         plaintext = f.read()
     ciphertext, tag = cipher_aes.encrypt_and_digest(plaintext)
@@ -307,7 +307,7 @@ def encrypt_file(filename, rsa_key):
     #     # if not isinstance(rsa_key, Crypto.PublicKey.RSA.RsaKey):
     #     #     return "Error! rsa_key passed into encrypt_file is not valid."
 
-    #     cipher = Crypto.Cipher.PKCS1_OAEP.new(rsa_key.publickey())
+    #     cipher = Crypto.Cipher..PKCS1_OAEP.new(rsa_key.publickey())
 
     #     with open(filename, 'rb') as fp:
     #         data = fp.read()
@@ -349,11 +349,11 @@ def decrypt_file(filename, rsa_key):
         ciphertext = f.read()  # Read the remaining ciphertext
 
     # Decrypt AES key with RSA
-    cipher_rsa = Crypto.CipherPKCS1_OAEP.PKCS1_OAEP.new(private_key)
+    cipher_rsa = Crypto.Cipher.PKCS1_OAEP.new(private_key)
     aes_key = cipher_rsa.decrypt(encrypted_key)
 
     # Decrypt ciphertext with AES
-    cipher_aes = Crypto.CipherPKCS1_OAEP.AES.new(aes_key, Crypto.CipherPKCS1_OAEP.AES.MODE_EAX, nonce=nonce)
+    cipher_aes = Crypto.Cipher.AES.new(aes_key, Crypto.Cipher.AES.MODE_EAX, nonce=nonce)
     plaintext = cipher_aes.decrypt_and_verify(ciphertext, tag)
 
     # Write the decrypted content to the output file
