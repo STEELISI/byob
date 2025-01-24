@@ -249,7 +249,7 @@ def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
         encrypted_data = ciphertext[31:]
 
         # Initialize the cipher with the nonce
-        cipher = AES.new(key, AES.MODE_OCB, nonce=nonce)
+        cipher = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_OCB, nonce=nonce)
         
         # Decrypt and verify the ciphertext
         plaintext = cipher.decrypt_and_verify(encrypted_data, tag)
