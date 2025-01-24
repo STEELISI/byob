@@ -236,11 +236,11 @@ def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
             key = key.encode("utf-8")
 
         # Decode the Base64-encoded ciphertext
-        try:
-            ciphertext = base64.b64decode(ciphertext_b64)
-        except:
-            print('it was b64')
-            return 'it was b64'
+        # try:
+        #     ciphertext = base64.b64decode(ciphertext_b64)
+        # except:
+        #     print('it was b64')
+        #     return 'it was b64'
 
         
         # Extract nonce, tag, and ciphertext from the combined output
