@@ -259,6 +259,7 @@ def encrypt_file(filename, rsa_key):
         if not os.path.isfile(filename):
             log("File '{}' not found".format(filename))
             return f"file {filename} not found"
+        log(f"attempting to encypt: {filename}")
         # if not os.path.splitext(filename)[1] in globals()['filetypes']:
         #     return "Error! Attempting the encrypt unsupported filetype"
 
