@@ -416,8 +416,11 @@ def decrypt_files(action):
         if not rsa_key.has_private():
             return "Error: RSA key cannot decrypt"
 
+        cipher = Crypto.Cipher.PKCS1_OAEP.new(rsa_key)
+        aes_key = os.urandom(32)
+
         if os.path.isfile(target):
-            res = decrypt_file(target, rsa_key)
+            res = decrypt_file(target, aes_key)
             return res
 
 
