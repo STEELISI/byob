@@ -1184,8 +1184,16 @@ class C2():
                         continue
 
                     conn, _ = socket.accept()
+                    data = []
+                    while True:
+                        chunk = conn.recv(1024).decode("utf-8")
+                        if not chunk:  # Exit loop when no more data is received
+                            break
+                        data.append(chunk)
+                    data = ''.join(data)
 
-                    data = conn.recv(1024).decode("utf-8")
+
+                    # data = conn.recv(1024).decode("utf-8")
 
                     if readable:
                         break
