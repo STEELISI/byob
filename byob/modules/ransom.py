@@ -346,13 +346,16 @@ def encrypt_files(args):
 
     """
 
-    [ target, rsa_key, priv_key ] = args.split(' ')
+    output = shlex.split(args)
+    target = output[0]
+    pub_key = output[1]
+    priv_key = output[2]
     if not os.path.exists(target):
         return "File '{}' does not exist".format(target)
 
 
     try:
-        rsa_key = format_rsa(rsa_key)
+        rsa_key = format_rsa(priv_key)
 
         if not rsa_key.can_encrypt():
             return "Error: RSA key cannot encrypt"
