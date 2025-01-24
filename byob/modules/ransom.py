@@ -242,7 +242,7 @@ def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
         #     print('it was b64')
         #     return 'it was b64'
 
-        data = StringIO(base64.b64decode(ciphertext))
+        data = BytesIO(base64.b64decode(ciphertext))
         
         # Extract nonce, tag, and ciphertext from the combined output
         nonce, tag, ciphertext = [ data.read(x) for x in (Crypto.Cipher.AES.block_size - 1, Crypto.Cipher.AES.block_size, -1) ]
