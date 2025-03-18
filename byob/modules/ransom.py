@@ -13,7 +13,7 @@ import queue
 import traceback
 import re
 import pickle
-import thread
+import threading
 try:
     # import tkinter
     # import tkinter.messagebox
