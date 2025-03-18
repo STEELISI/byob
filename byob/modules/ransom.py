@@ -397,6 +397,7 @@ def encrypt_files(args):
     """
 
     output = shlex.split(args)
+    print("output recieved: ", args)
     target = output[0]
     pub_key = output[1]
     priv_key = output[2]
