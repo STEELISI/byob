@@ -430,6 +430,9 @@ def encrypt_files(args):
                         for thread in loc_threads:
                             thread.join()
 
+            for thread in loc_threads:
+                thread.join()
+
             return "Encrypting files"
 
 
@@ -482,6 +485,9 @@ def decrypt_files(action):
                     if len(loc_threads) > 10:
                         for thread in loc_threads:
                             thread.join()
+
+            for thread in loc_threads:
+                thread.join()
 
             return "Decrypting files"
 
